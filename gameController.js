@@ -1,53 +1,30 @@
-let curBoard;
-let curPlayer;
-let boardFlipped = false;
-
 let curHeldPiece;
 let curHeldPieceStartingPosition;
-let moveStack;
-
-let whiteKingSideCastleMoved = false
-let whiteQueenSideCastleMoved = false
-let whiteKinkMoved = false
-
-let blackKingSideCastleMoved = false
-let blackQueenSideCastleMoved = false
-let blackKinkMoved = false
+let boardFlipped;
 
 function startGame() {
-    const starterPosition = [['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
-    ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
-    ['.', '.', '.', '.', '.', '.', '.', '.'],
-    ['.', '.', '.', '.', '.', '.', '.', '.'],
-    ['.', '.', '.', '.', '.', '.', '.', '.'],
-    ['.', '.', '.', '.', '.', '.', '.', '.'],
-    ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
-    ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r']];
-
-    const starterPlayer = 'white';
-    moveStack = {
-        count: 0,
-        moves: []
-    }
-
-    boardFlipped = false;
-    let whiteKingSideCastleMoved = false
-    let whiteQueenSideCastleMoved = false
-    let whiteKinkMoved = false
-    let blackKingSideCastleMoved = false
-    let blackQueenSideCastleMoved = false
-    let blackKinkMoved = false
-
-    loadPosition(starterPosition, starterPlayer);
+    boardFlipped = false
+    initState()
+    refreshUI()
 }
 
-function loadPosition(position, playerToMove) {
-    curBoard = position;
-    curPlayer = playerToMove;
+function refreshUI() {
+    let curBoard = JSON.parse(JSON.stringify(currentState().board))
+
+    if(boardFlipped){
+        const flippedBoard = []
+        for(let i = 0; 8 > i; i++){
+            flippedBoard[i] = []
+            for(let j = 0; 8>j; j++){
+                flippedBoard[i][j] = curBoard[7-i][7-j]
+            }
+        }
+        curBoard = flippedBoard
+    }
 
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
-            loadPiece(position[i][j], [i + 1, j + 1]);
+            loadPiece(curBoard[i][j], [i + 1, j + 1]);
         }
     }
     setPieceHoldEvents();
@@ -145,7 +122,7 @@ function setPieceHoldEvents() {
 
                     if (!(pieceReleasePosition[0] == curHeldPieceStartingPosition[0] && pieceReleasePosition[1] == curHeldPieceStartingPosition[1])) {
                         if (validateMovement(curHeldPieceStartingPosition, pieceReleasePosition)) {
-                            movePiece(curHeldPiece, curHeldPieceStartingPosition, pieceReleasePosition);
+                            movePiece(curHeldPieceStartingPosition, pieceReleasePosition);
                         }
                     }
                 }
@@ -159,125 +136,76 @@ function setPieceHoldEvents() {
     });
 }
 
-function movePiece(piece, startingPosition, endingPosition, castleFlag = false) {
-    const lastMove = {
-        piece: null,
-        pieceCode: null,
-        endPiece: null,
-        endPieceCode: null,
-        startingPosition: null,
-        endingPosition: null
-    }
+function stateMovePiece(nextState, rawStartingPosition, rawEndingPosition, turnFinishing = true){
+    const startingPosition = !boardFlipped ? rawStartingPosition :
+        [7 - rawStartingPosition[0], 7 - rawStartingPosition[1]]
+    const endingPosition = !boardFlipped ? rawEndingPosition :
+        [7 - rawEndingPosition[0], 7 - rawEndingPosition[1]]
 
-    lastMove.piece = piece;
-    lastMove.startingPosition = startingPosition;
-    lastMove.endingPosition = endingPosition;
+    const attackerPiece = nextState.board[startingPosition[0]][startingPosition[1]];
 
-    // move validations to validateMovement()
-    const boardPiece = curBoard[startingPosition[0]][startingPosition[1]];
-    lastMove.pieceCode = boardPiece;
-
-    if (boardPiece != '.') {
-        const isBlackTurn = boardPiece === boardPiece.toUpperCase() && curPlayer == 'black'
-        const isWhiteTurn = boardPiece === boardPiece.toLowerCase() && curPlayer == 'white'
+    if (attackerPiece !== '.') {
+        const isBlackTurn = attackerPiece === attackerPiece.toUpperCase() && nextState.curPlayer === 'black'
+        const isWhiteTurn = attackerPiece === attackerPiece.toLowerCase() && nextState.curPlayer === 'white'
 
         if (isBlackTurn || isWhiteTurn) {
-                if(boardPiece.toLowerCase() === 'k' || boardPiece.toLowerCase() === 'r'){
-                    if(isWhiteTurn){
-                        if(boardPiece.toLowerCase() === 'k'){
-                            whiteKinkMoved = true
-                        }
-                        else if((!boardFlipped && startingPosition[0] === 7 && startingPosition[1] === 7) ||
-                            (boardFlipped && startingPosition[0] === 0 && startingPosition[1] === 0)){
-                            whiteKingSideCastleMoved = true
-                        }
-                        else if((!boardFlipped && startingPosition[0] === 7 && startingPosition[1] === 0) ||
-                            (boardFlipped && startingPosition[0] === 0 && startingPosition[1] === 7)){
-                            whiteQueenSideCastleMoved = true
-                        }
+            if(attackerPiece.toLowerCase() === 'k' || attackerPiece.toLowerCase() === 'r'){
+                if(isWhiteTurn){
+                    if(attackerPiece.toLowerCase() === 'k'){
+                        nextState.whiteKinkMoved = true
                     }
-                    else {
-                        if(boardPiece.toLowerCase() === 'k'){
-                            blackKinkMoved = true
-                        }
-                        else if((!boardFlipped && startingPosition[0] === 0 && startingPosition[1] === 7) ||
-                            (boardFlipped && startingPosition[0] === 7 && startingPosition[1] === 0)){
-                            blackKingSideCastleMoved = true
-                        }
-                        else if((!boardFlipped && startingPosition[0] === 0 && startingPosition[1] === 0) ||
-                            (boardFlipped && startingPosition[0] === 7 && startingPosition[1] === 7)){
-                            blackQueenSideCastleMoved = true
-                        }
+                    else if(startingPosition[0] === 7 && startingPosition[1] === 7){
+                        nextState.whiteKingSideCastleMoved = true
+                    }
+                    else if(startingPosition[0] === 7 && startingPosition[1] === 0){
+                        nextState.whiteQueenSideCastleMoved = true
                     }
                 }
+                else {
+                    if(attackerPiece.toLowerCase() === 'k'){
+                        nextState.blackKinkMoved = true
+                    }
+                    else if(startingPosition[0] === 0 && startingPosition[1] === 7){
+                        nextState.blackKingSideCastleMoved = true
+                    }
+                    else if(startingPosition[0] === 0 && startingPosition[1] === 0){
+                        nextState.blackQueenSideCastleMoved = true
+                    }
+                }
+            }
 
-                curBoard[startingPosition[0]][startingPosition[1]] = '.';
-                lastMove.endPieceCode = curBoard[endingPosition[0]][endingPosition[1]];
-                curBoard[endingPosition[0]][endingPosition[1]] = boardPiece;
+            nextState.board[startingPosition[0]][startingPosition[1]] = '.';
+            nextState.board[endingPosition[0]][endingPosition[1]] = attackerPiece;
 
-                const destinationSquare = document.getElementById(`${endingPosition[0] + 1}${endingPosition[1] + 1}`);
-                lastMove.endPiece = destinationSquare.children[0];
-                destinationSquare.textContent = '';
-                destinationSquare.appendChild(piece);
+            nextState.whiteKingSideCastleMoved = false
+            nextState.whiteQueenSideCastleMoved = false
+            nextState.whiteKinkMoved = false
+            nextState.blackKingSideCastleMoved = false
+            nextState.blackQueenSideCastleMoved = false
+            nextState.blackKinkMoved = false
 
-                lastMove.whiteKingSideCastleMoved = false
-                lastMove.whiteQueenSideCastleMoved = false
-                lastMove.whiteKinkMoved = false
-                lastMove.blackKingSideCastleMoved = false
-                lastMove.blackQueenSideCastleMoved = false
-                lastMove.blackKinkMoved = false
-
-                // check if is check/checkmate
-                lastMove.castling = castleFlag
-                toggleTurn()
+            if(turnFinishing) {
+                toggleTurn(nextState)
+                pushState(nextState)
+                refreshUI()
+            }
         }
     }
 
-    moveStack.moves[moveStack.count] = lastMove;
-    moveStack.count++;
+    return nextState
 }
 
-function toggleTurn(){
-    if (curPlayer == 'white') {
-        curPlayer = 'black';
+function movePiece(rawStartingPosition, rawEndingPosition, fullTurn = true) {
+    const nextState = JSON.parse(JSON.stringify(currentState()))
+    return stateMovePiece(nextState, rawStartingPosition, rawEndingPosition, fullTurn)
+}
+
+function toggleTurn(state){
+    if (state.curPlayer === 'white') {
+        state.curPlayer = 'black';
     } else {
-        curPlayer = 'white';
+        state.curPlayer = 'white';
     }
-}
-
-function undo(){
-    if(moveStack.count <= 0) return;
-
-    moveStack.count--;
-    const lastMove = moveStack.moves[moveStack.count]
-
-    if(lastMove.piece != null){
-        curBoard[lastMove.startingPosition[0]][lastMove.startingPosition[1]] = lastMove.pieceCode;
-        curBoard[lastMove.endingPosition[0]][lastMove.endingPosition[1]] = lastMove.endPieceCode;
-
-        const startSquare = document.getElementById(
-            `${lastMove.startingPosition[0] + 1}${lastMove.startingPosition[1] + 1}`);
-        startSquare.textContent = '';
-        startSquare.appendChild(lastMove.piece);
-
-        const endSquare = document.getElementById(
-            `${lastMove.endingPosition[0] + 1}${lastMove.endingPosition[1] + 1}`);
-        endSquare.textContent = '';
-
-        if(lastMove.endPiece != null) {
-            endSquare.appendChild(lastMove.endPiece);
-        }
-
-        whiteKingSideCastleMoved = lastMove.whiteKingSideCastleMoved
-        whiteQueenSideCastleMoved = lastMove.whiteQueenSideCastleMoved
-        whiteKinkMoved = lastMove.whiteKinkMoved
-        blackKingSideCastleMoved = lastMove.blackKingSideCastleMoved
-        blackQueenSideCastleMoved = lastMove.blackQueenSideCastleMoved
-        blackKinkMoved = lastMove.blackKinkMoved
-    }
-
-    if(lastMove.castling) undo()
-    else toggleTurn();
 }
 
 function resetBoard(){
@@ -285,94 +213,45 @@ function resetBoard(){
 }
 
 function flipBoard(){
-    const mirrorArray = [[], [], [], [], [], [], [], []]
-    for(let i = 0; 8 > i; i++){
-        for(let j = 0; 8>j; j++){
-            mirrorArray[i][j] = curBoard[7-i][7-j]
-        }
-    }
-
     boardFlipped = !boardFlipped
-    loadPosition(mirrorArray, curPlayer)
+    refreshUI()
+}
 
-    const mirrorMoves = JSON.parse(JSON.stringify(moveStack.moves))
-    for(let i = 0; mirrorMoves.length > i; i++){
-        mirrorMoves[i].startingPosition = [
-            7 - mirrorMoves[i].startingPosition[0], 7 - mirrorMoves[i].startingPosition[1]]
-        mirrorMoves[i].endingPosition = [
-            7 - mirrorMoves[i].endingPosition[0], 7 - mirrorMoves[i].endingPosition[1]]
-    }
-    for(let i = 0; mirrorMoves.length > i; i++){
-        moveStack.moves[i].startingPosition = mirrorMoves[i].startingPosition
-        moveStack.moves[i].endingPosition = mirrorMoves[i].endingPosition
-    }
+function undo(){
+    prevState()
+    refreshUI()
+}
+
+function redo(){
+    nextState()
+    refreshUI()
 }
 
 function castling(pieceColor, isKingSide){
     if(pieceColor === 'white'){
-        if(isKingSide && !boardFlipped){
-            const kingSquare = document.getElementById(`${7 + 1}${4 + 1}`).children[0];
-            const rookSquare = document.getElementById(`${7 + 1}${7 + 1}`).children[0];
-            movePiece(kingSquare, [7, 4], [7, 6])
-            toggleTurn()
-            movePiece(rookSquare, [7, 7], [7, 5], true)
+        if(isKingSide){
+            const nextState = movePiece([7, 4], [7, 6], false)
+            stateMovePiece(nextState, [7, 7], [7, 5], true)
         }
-        else if(isKingSide && boardFlipped){
-            const kingSquare = document.getElementById(`${0 + 1}${3 + 1}`).children[0];
-            const rookSquare = document.getElementById(`${0 + 1}${0 + 1}`).children[0];
-            movePiece(kingSquare, [0, 3], [0, 1])
-            toggleTurn()
-            movePiece(rookSquare, [0, 0], [0, 2], true)
-        }
-        else if(!isKingSide && !boardFlipped){
-            const kingSquare = document.getElementById(`${7 + 1}${4 + 1}`).children[0];
-            const rookSquare = document.getElementById(`${7 + 1}${0 + 1}`).children[0];
-            movePiece(kingSquare, [7, 4], [7, 2])
-            toggleTurn()
-            movePiece(rookSquare, [7, 0], [7, 3], true)
-        }
-        else {
-            const kingSquare = document.getElementById(`${0 + 1}${3 + 1}`).children[0];
-            const rookSquare = document.getElementById(`${0 + 1}${7 + 1}`).children[0];
-            movePiece(kingSquare, [0, 3], [0, 5])
-            toggleTurn()
-            movePiece(rookSquare, [0, 7], [0, 4], true)
+        else if(!isKingSide){
+            const nextState = movePiece([7, 4], [7, 2], false)
+            stateMovePiece(nextState, [7, 0], [7, 3], true)
         }
     }
     else {
-        if(isKingSide && !boardFlipped){
-            const kingSquare = document.getElementById(`${0 + 1}${4 + 1}`).children[0];
-            const rookSquare = document.getElementById(`${0 + 1}${7 + 1}`).children[0];
-            movePiece(kingSquare, [0, 4], [0, 6])
-            toggleTurn()
-            movePiece(rookSquare, [0, 7], [0, 5], true)
+        if(isKingSide){
+            const nextState = movePiece([0, 4], [0, 6], false)
+            stateMovePiece(nextState, [0, 7], [0, 5], true)
         }
-        else if(isKingSide && boardFlipped){
-            const kingSquare = document.getElementById(`${7 + 1}${3 + 1}`).children[0];
-            const rookSquare = document.getElementById(`${7 + 1}${0 + 1}`).children[0];
-            movePiece(kingSquare, [7, 3], [7, 1])
-            toggleTurn()
-            movePiece(rookSquare, [7, 0], [7, 2], true)
-        }
-        else if(!isKingSide && !boardFlipped){
-            const kingSquare = document.getElementById(`${0 + 1}${4 + 1}`).children[0];
-            const rookSquare = document.getElementById(`${0 + 1}${0 + 1}`).children[0];
-            movePiece(kingSquare, [0, 4], [0, 2])
-            toggleTurn()
-            movePiece(rookSquare, [0, 0], [0, 3], true)
-        }
-        else {
-            const kingSquare = document.getElementById(`${7 + 1}${3 + 1}`).children[0];
-            const rookSquare = document.getElementById(`${7 + 1}${7 + 1}`).children[0];
-            movePiece(kingSquare, [7, 3], [7, 5])
-            toggleTurn()
-            movePiece(rookSquare, [7, 7], [7, 4], true)
+        else if(!isKingSide){
+            const nextState = movePiece([0, 4], [0, 2], false)
+            stateMovePiece(nextState, [0, 0], [0, 3], true)
         }
     }
 }
 
 function validateMovement(startingPosition, endingPosition) {
-    const boardPiece = curBoard[startingPosition[0]][startingPosition[1]];
+    const boardPiece = currentState().board[startingPosition[0]][startingPosition[1]];
     
     switch (boardPiece) {
         case 'r':
@@ -424,53 +303,29 @@ function validateKingMovement(pieceColor, startingPosition, endingPosition) {
         // validate castling
         return true;
     } else {
-        if(pieceColor === 'white' && curPlayer === 'white' && !whiteKinkMoved){
-            if(!boardFlipped && startingPosition[0] === 7 && startingPosition[1] === 4){
-                if(endingPosition[0] === 7 && endingPosition[1] === 6 && !whiteKingSideCastleMoved){
-                    if(curBoard[7][5] === '.' && curBoard[7][6] === '.'){
+        if(pieceColor === 'white' && currentState().curPlayer === 'white' && !currentState().whiteKinkMoved){
+            if(startingPosition[0] === 7 && startingPosition[1] === 4){
+                if(endingPosition[0] === 7 && endingPosition[1] === 6 && !currentState().whiteKingSideCastleMoved){
+                    if(currentState().board[7][5] === '.' && currentState().board[7][6] === '.'){
                         castling(pieceColor, true)
                     }
                 }
-                else if(endingPosition[0] === 7 && endingPosition[1] === 2 && !whiteQueenSideCastleMoved){
-                    if(curBoard[7][1] === '.' && curBoard[7][2] === '.'&& curBoard[7][3] === '.') {
-                        castling(pieceColor, false)
-                    }
-                }
-            }
-            else if(boardFlipped && startingPosition[0] === 0 && startingPosition[1] === 3){
-                if(endingPosition[0] === 0 && endingPosition[1] === 1 && !whiteKingSideCastleMoved){
-                    if(curBoard[0][1] === '.' && curBoard[0][2] === '.') {
-                        castling(pieceColor, true)
-                    }
-                }
-                else if(endingPosition[0] === 0 && endingPosition[1] === 5 && !whiteQueenSideCastleMoved){
-                    if(curBoard[0][4] === '.' && curBoard[0][5] === '.' && curBoard[0][6] === '.') {
+                else if(endingPosition[0] === 7 && endingPosition[1] === 2 && !currentState().whiteQueenSideCastleMoved){
+                    if(currentState().board[7][1] === '.' && currentState().board[7][2] === '.'&& currentState().board[7][3] === '.') {
                         castling(pieceColor, false)
                     }
                 }
             }
         }
-        else if(pieceColor === 'black' && curPlayer === 'black' && !blackKinkMoved) {
-            if(!boardFlipped && startingPosition[0] === 0 && startingPosition[1] === 4){
-                if(endingPosition[0] === 0 && endingPosition[1] === 6 && !blackKingSideCastleMoved){
-                    if(curBoard[0][5] === '.' && curBoard[0][6] === '.') {
+        else if(pieceColor === 'black' && currentState().curPlayer === 'black' && !currentState().blackKinkMoved) {
+            if(startingPosition[0] === 0 && startingPosition[1] === 4){
+                if(endingPosition[0] === 0 && endingPosition[1] === 6 && !currentState().blackKingSideCastleMoved){
+                    if(currentState().board[0][5] === '.' && currentState().board[0][6] === '.') {
                         castling(pieceColor, true)
                     }
                 }
-                else if(endingPosition[0] === 0 && endingPosition[1] === 2 && !blackQueenSideCastleMoved){
-                    if(curBoard[0][1] === '.' && curBoard[0][2] === '.' && curBoard[0][3] === '.') {
-                        castling(pieceColor, false)
-                    }
-                }
-            }
-            else if(boardFlipped && startingPosition[0] === 7 && startingPosition[1] === 3){
-                if(endingPosition[0] === 7 && endingPosition[1] === 1 && !blackKingSideCastleMoved){
-                    if(curBoard[7][1] === '.' && curBoard[7][2] === '.') {
-                        castling(pieceColor, true)
-                    }
-                }
-                else if(endingPosition[0] === 7 && endingPosition[1] === 5 && !blackQueenSideCastleMoved){
-                    if(curBoard[7][4] === '.' && curBoard[7][5] === '.' && curBoard[7][6] === '.') {
+                else if(endingPosition[0] === 0 && endingPosition[1] === 2 && !currentState().blackQueenSideCastleMoved){
+                    if(currentState().board[0][1] === '.' && currentState().board[0][2] === '.' && currentState().board[0][3] === '.') {
                         castling(pieceColor, false)
                     }
                 }
@@ -496,7 +351,7 @@ function validateQueenMovement(startingPosition, endingPosition) {
 }
 
 function validatePawnMovement(pawnColor, startingPosition, endingPosition) {
-    const direction = (pawnColor == 'black' && !boardFlipped) || (pawnColor == 'white' && boardFlipped) ? 1 : -1;
+    const direction = pawnColor == 'black' ? 1 : -1;
 
     let isCapture = false;
 
@@ -509,10 +364,8 @@ function validatePawnMovement(pawnColor, startingPosition, endingPosition) {
         }
 
     // validate if is promotion
-    let isFirstMove = (!boardFlipped && pawnColor == 'white' && startingPosition[0] == 6)
-        || (boardFlipped && pawnColor == 'white' && startingPosition[0] == 1)
-        || (!boardFlipped && pawnColor == 'black' && startingPosition[0] == 1)
-        || (boardFlipped && pawnColor == 'black' && startingPosition[0] == 6)
+    let isFirstMove = (pawnColor === 'white' && startingPosition[0] === 6)
+        || (pawnColor === 'black' && startingPosition[0] === 1)
 
     if (((endingPosition[0] == startingPosition[0] + direction || (endingPosition[0] == startingPosition[0] + direction * 2 && isFirstMove)) &&
          endingPosition[1] == startingPosition[1]) || isCapture) {
@@ -590,8 +443,8 @@ function isFriendlyPieceOnEndingPosition(endingPosition) {
     if (destinationSquare.children.length > 0) {
         const destinationPiece = destinationSquare.querySelector('.piece').id;
     
-        if (destinationPiece == destinationPiece.toUpperCase() && curPlayer == 'black' ||
-            destinationPiece == destinationPiece.toLowerCase() && curPlayer == 'white') {
+        if (destinationPiece == destinationPiece.toUpperCase() && currentState().curPlayer == 'black' ||
+            destinationPiece == destinationPiece.toLowerCase() && currentState().curPlayer == 'white') {
                 return true;
         } else {
             return false;
@@ -607,8 +460,8 @@ function isEnemyPieceOnEndingPosition(endingPosition) {
     if (destinationSquare.children.length > 0) {
         const destinationPiece = destinationSquare.querySelector('.piece').id;
     
-        if (destinationPiece == destinationPiece.toUpperCase() && curPlayer == 'white' ||
-            destinationPiece == destinationPiece.toLowerCase() && curPlayer == 'black') {
+        if (destinationPiece == destinationPiece.toUpperCase() && currentState().curPlayer == 'white' ||
+            destinationPiece == destinationPiece.toLowerCase() && currentState().curPlayer == 'black') {
                 return true;
         } else {
             return false;
