@@ -41,27 +41,20 @@ function stateMovePiece(nextState, startingPosition, endingPosition, turnFinishi
                 }
             }
 
+            nextState.enPos = null
+            if(attackerPiece.toLowerCase() === 'p'){
+                console.log("Dakhel", Math.abs(endingPosition[0] - startingPosition[0]))
+                if(Math.abs(endingPosition[0] - startingPosition[0]) === 2){
+                    if(attackerPiece === 'p') nextState.enPos = [endingPosition[0] + 1, endingPosition[1]]
+                    else nextState.enPos = [endingPosition[0] - 1, endingPosition[1]]
+                    console.log("EnPos", nextState.enPos)
+                }
+            }
+
             nextState.board[startingPosition[0]][startingPosition[1]] = '.';
             nextState.board[endingPosition[0]][endingPosition[1]] = attackerPiece;
 
-            nextState.whiteKingSideCastleMoved = false
-            nextState.whiteQueenSideCastleMoved = false
-            nextState.whiteKinkMoved = false
-            nextState.blackKingSideCastleMoved = false
-            nextState.blackQueenSideCastleMoved = false
-            nextState.blackKinkMoved = false
-
-            if(turnFinishing) {
-                toggleTurn(nextState)
-                pushState(nextState)
-                refreshUI()
-
-                const kSafety = checkKingsSafety()
-                if(!kSafety){
-                    alert("King In Danger!")
-                    undo()
-                }
-            }
+            if(turnFinishing) finishTurn(nextState)
         }
     }
 
@@ -71,6 +64,19 @@ function stateMovePiece(nextState, startingPosition, endingPosition, turnFinishi
 function movePiece(startingPosition, endingPosition, fullTurn = true) {
     const nextState = JSON.parse(JSON.stringify(currentState()))
     return stateMovePiece(nextState, startingPosition, endingPosition, fullTurn)
+}
+
+function finishTurn(nextState){
+    toggleTurn(nextState)
+    pushState(nextState)
+    refreshUI()
+
+    const kSafety = checkKingsSafety()
+    if(!kSafety){
+        alert("King In Danger!")
+        undo()
+        clearStatesAfterCurrent()
+    }
 }
 
 function resetBoard(){
@@ -110,6 +116,22 @@ function castling(pieceColor, isKingSide){
     }
 }
 
+function enPassant(startingPosition){
+    const nextState = JSON.parse(JSON.stringify(currentState()))
+    const attackerPiece = nextState.board[startingPosition[0]][startingPosition[1]];
+
+    nextState.enPos = null
+    nextState.board[startingPosition[0]][startingPosition[1]] = '.';
+    nextState.board[currentState().enPos[0]][currentState().enPos[1]] = attackerPiece;
+    if(currentState().curPlayer === 'white'){
+        nextState.board[currentState().enPos[0] + 1][currentState().enPos[1]] = '.'
+    }
+    else {
+        nextState.board[currentState().enPos[0] - 1][currentState().enPos[1]] = '.'
+    }
+    finishTurn(nextState)
+}
+
 function checkKingsSafety(){
     let whiteKingPos = null
     let blackKingPos = null
@@ -146,7 +168,6 @@ function checkKingSafety(kingPos){
 
 function validateMovement(startingPosition, endingPosition) {
     const boardPiece = currentState().board[startingPosition[0]][startingPosition[1]];
-    
     switch (boardPiece) {
         case 'r':
         case 'R': return validateRookMovement(startingPosition, endingPosition);
@@ -260,7 +281,7 @@ function validateQueenMovement(startingPosition, endingPosition) {
 }
 
 function validatePawnMovement(pawnColor, startingPosition, endingPosition) {
-    const direction = pawnColor == 'black' ? 1 : -1;
+    const direction = pawnColor === 'black' ? 1 : -1;
 
     let isCapture = false;
 
@@ -287,6 +308,19 @@ function validatePawnMovement(pawnColor, startingPosition, endingPosition) {
             // validate if move puts own king in check
             return true;
     } else {
+        if(currentState().enPos !== null && endingPosition[0] === currentState().enPos[0] && endingPosition[1] === currentState().enPos[1]){
+            if(pawnColor === 'white' && currentState().curPlayer === 'white'){
+                const isEnPassant = Math.abs(endingPosition[1] - startingPosition[1]) === 1 &&
+                    startingPosition[0] - endingPosition[0] === 1
+                if(isEnPassant) enPassant(startingPosition)
+            }
+            else if(pawnColor === 'black' && currentState().curPlayer === 'black') {
+                const isEnPassant = Math.abs(endingPosition[1] - startingPosition[1]) === 1 &&
+                    endingPosition[0] - startingPosition[0] === 1
+                if(isEnPassant) enPassant(startingPosition)
+            }
+        }
+
         return false;
     }
 }

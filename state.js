@@ -20,7 +20,8 @@ function initState(){
         whiteKinkMoved: false,
         blackKingSideCastleMoved: false,
         blackQueenSideCastleMoved: false,
-        blackKinkMoved: false
+        blackKinkMoved: false,
+        epPos: null
     }
 
     moveStack[0] = cState
@@ -42,6 +43,10 @@ function prevState(){
 
 function nextState(){
     if(statePosition < (moveStack.length - 1)) statePosition++
+}
+
+function clearStatesAfterCurrent(){
+    moveStack.length = statePosition + 1
 }
 
 function toggleTurn(state){
