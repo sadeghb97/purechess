@@ -43,16 +43,19 @@ function stateMovePiece(nextState, startingPosition, endingPosition, turnFinishi
 
             nextState.enPos = null
             if(attackerPiece.toLowerCase() === 'p'){
-                console.log("Dakhel", Math.abs(endingPosition[0] - startingPosition[0]))
                 if(Math.abs(endingPosition[0] - startingPosition[0]) === 2){
                     if(attackerPiece === 'p') nextState.enPos = [endingPosition[0] + 1, endingPosition[1]]
                     else nextState.enPos = [endingPosition[0] - 1, endingPosition[1]]
-                    console.log("EnPos", nextState.enPos)
                 }
             }
 
             nextState.board[startingPosition[0]][startingPosition[1]] = '.';
             nextState.board[endingPosition[0]][endingPosition[1]] = attackerPiece;
+
+            if(attackerPiece.toLowerCase() === 'p' && endingPosition[0] === 7 || endingPosition[0] === 0){
+                if(attackerPiece === 'p') nextState.board[endingPosition[0]][endingPosition[1]] = 'q'
+                else nextState.board[endingPosition[0]][endingPosition[1]] = 'Q'
+            }
 
             if(turnFinishing) finishTurn(nextState)
         }
