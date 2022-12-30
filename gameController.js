@@ -55,6 +55,12 @@ function stateMovePiece(nextState, startingPosition, endingPosition, turnFinishi
                 toggleTurn(nextState)
                 pushState(nextState)
                 refreshUI()
+
+                const kSafety = checkKingsSafety()
+                if(!kSafety){
+                    alert("King In Danger!")
+                    undo()
+                }
             }
         }
     }
@@ -102,6 +108,40 @@ function castling(pieceColor, isKingSide){
             stateMovePiece(nextState, [0, 0], [0, 3], true)
         }
     }
+}
+
+function checkKingsSafety(){
+    let whiteKingPos = null
+    let blackKingPos = null
+
+    for(let i=0; 8>i; i++){
+        for(let j=0; 8>j; j++){
+            const piece = currentState().board[i][j]
+            if(piece === 'k') whiteKingPos = [i, j]
+            else if(piece === 'K') blackKingPos = [i, j]
+        }
+    }
+
+    return checkKingSafety(whiteKingPos) && checkKingSafety(blackKingPos)
+}
+
+function checkKingSafety(kingPos){
+    for(let i=0; 8>i; i++){
+        const kingPiece = currentState().board[kingPos[0]][kingPos[1]]
+        const kingColor = kingPiece === 'k' ? 'white' : 'black'
+
+        for(let j=0; 8>j; j++){
+            const attackerPiece = currentState().board[i][j]
+            if(attackerPiece === '.') continue
+
+            const attackerPieceColor = attackerPiece === attackerPiece.toLowerCase() ? 'white' : 'black'
+            if(kingColor === attackerPieceColor) continue
+
+            if(validateMovement([i, j], kingPos)) return false
+        }
+    }
+
+    return true
 }
 
 function validateMovement(startingPosition, endingPosition) {
