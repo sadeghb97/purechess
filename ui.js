@@ -22,7 +22,7 @@ function refreshUI() {
             loadPiece(curBoard[i][j], [i + 1, j + 1]);
         }
     }
-    setPieceHoldEvents();
+    if(!readOnly) setPieceHoldEvents();
 }
 
 function loadPiece(piece, position) {

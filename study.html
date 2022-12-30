@@ -95,19 +95,17 @@
         </div>
 
         <div style="display: flex; justify-content: center; margin-top: 24px;">
-            <button class="button" onclick="undo()">Undo</button>
-            <button class="button" onclick="redo()">Redo</button>
+            <button class="button" onclick="undo()">Prev</button>
+            <button class="button" onclick="redo()">Next</button>
             <button class="button" onclick="flipBoard()">Flip</button>
-            <button class="button" onclick="resetBoard()">Reset</button>
-        </div>
-        <div style="display: flex; justify-content: center; margin-top: 24px;">
-            <button class="button" style="width: 200px;" onclick="saveGame()">Save Game</button>
+            <button class="button" onclick="loadFirstState(true)">Reset</button>
         </div>
     </div>
 
     <script src="state.js"></script>
     <script src="ui.js"></script>
+    <script src="utils.js"></script>
     <script src="gameController.js"></script>
-    <script src="play.js"></script>
+    <script src="study.js"></script>
 </body>
 </html>

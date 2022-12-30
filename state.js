@@ -1,9 +1,11 @@
-let moveStack;
-let statePosition = 0;
+let game = {
+    statePosition: 0,
+    moveStack: null
+}
 
 function initState(){
-    statePosition = 0;
-    moveStack = [];
+    game.statePosition = 0;
+    game.moveStack = [];
 
     const cState = {
         board: [['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
@@ -24,29 +26,33 @@ function initState(){
         epPos: null
     }
 
-    moveStack[0] = cState
+    game.moveStack[0] = cState
 }
 
 function currentState(){
-    return moveStack[statePosition]
+    return game.moveStack[game.statePosition]
 }
 
 function pushState(state){
-    statePosition++
-    moveStack[statePosition] = state
-    moveStack.length = statePosition + 1
+    game.statePosition++
+    game.moveStack[game.statePosition] = state
+    game.moveStack.length = game.statePosition + 1
+}
+
+function goToFirstState(){
+    game.statePosition = 0
 }
 
 function prevState(){
-    if(statePosition > 0) statePosition--
+    if(game.statePosition > 0) game.statePosition--
 }
 
 function nextState(){
-    if(statePosition < (moveStack.length - 1)) statePosition++
+    if(game.statePosition < (game.moveStack.length - 1)) game.statePosition++
 }
 
 function clearStatesAfterCurrent(){
-    moveStack.length = statePosition + 1
+    game.moveStack.length = game.statePosition + 1
 }
 
 function toggleTurn(state){
@@ -59,4 +65,27 @@ function toggleTurn(state){
 
 function finalPosition(rawPosition){
     return !boardFlipped ? rawPosition : [7 - rawPosition[0], 7 - rawPosition[1]]
+}
+
+function loadGame(filename, startFlag = true){
+    readTextFile("games/" + filename, (gameStr) => {
+        const gameObject = JSON.parse(gameStr)
+        boardFlipped = gameObject.boardFlipped
+        game = gameObject
+        if(startFlag) goToFirstState()
+        refreshUI(true)
+    })
+}
+
+function saveGame(){
+    game.boardFlipped = boardFlipped
+    const gameStr = JSON.stringify(game)
+
+    const filename = prompt("Please enter filename");
+    const link = document.createElement("a");
+    const file = new Blob([gameStr], { type: 'text/plain' });
+    link.href = URL.createObjectURL(file);
+    link.download = filename;
+    link.click();
+    URL.revokeObjectURL(link.href);
 }

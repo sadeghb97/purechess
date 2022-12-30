@@ -1,11 +1,16 @@
 let curHeldPiece;
 let curHeldPieceStartingPosition;
 let boardFlipped;
+let readOnly = false
 
 function startGame() {
     boardFlipped = false
     initState()
     refreshUI()
+}
+
+function studyGame(filename){
+    loadGame(filename, true)
 }
 
 function stateMovePiece(nextState, startingPosition, endingPosition, turnFinishing = true){
@@ -80,6 +85,11 @@ function finishTurn(nextState){
         undo()
         clearStatesAfterCurrent()
     }
+}
+
+function loadFirstState(){
+    goToFirstState()
+    refreshUI()
 }
 
 function resetBoard(){
@@ -404,5 +414,3 @@ function isEnemyPieceOnPosition(endingPosition) {
         return false;
     }
 }
-
-startGame();
