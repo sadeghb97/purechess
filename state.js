@@ -43,3 +43,15 @@ function prevState(){
 function nextState(){
     if(statePosition < (moveStack.length - 1)) statePosition++
 }
+
+function toggleTurn(state){
+    if (state.curPlayer === 'white') {
+        state.curPlayer = 'black';
+    } else {
+        state.curPlayer = 'white';
+    }
+}
+
+function finalPosition(rawPosition){
+    return !boardFlipped ? rawPosition : [7 - rawPosition[0], 7 - rawPosition[1]]
+}

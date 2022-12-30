@@ -8,140 +8,7 @@ function startGame() {
     refreshUI()
 }
 
-function refreshUI() {
-    let curBoard = JSON.parse(JSON.stringify(currentState().board))
-
-    if(boardFlipped){
-        const flippedBoard = []
-        for(let i = 0; 8 > i; i++){
-            flippedBoard[i] = []
-            for(let j = 0; 8>j; j++){
-                flippedBoard[i][j] = curBoard[7-i][7-j]
-            }
-        }
-        curBoard = flippedBoard
-    }
-
-    for (let i = 0; i < 8; i++) {
-        for (let j = 0; j < 8; j++) {
-            loadPiece(curBoard[i][j], [i + 1, j + 1]);
-        }
-    }
-    setPieceHoldEvents();
-}
-
-function loadPiece(piece, position) {
-    const squareElement = document.getElementById(`${position[0]}${position[1]}`);
-    if (piece == '.') {
-        if(squareElement.hasChildNodes())
-            squareElement.removeChild(squareElement.children[0])
-        return;
-    }
-
-    const pieceElement = document.createElement('img');
-    pieceElement.classList.add('piece');
-    pieceElement.id = piece;
-    pieceElement.draggable = false;
-    pieceElement.src = getPieceImageSource(piece);
-
-    squareElement.textContent = '';
-    squareElement.appendChild(pieceElement);
-}
-
-function getPieceImageSource(piece) {
-    switch (piece) {
-        case 'R': return 'assets/black_rook.png';
-        case 'N': return 'assets/black_knight.png';
-        case 'B': return 'assets/black_bishop.png';
-        case 'Q': return 'assets/black_queen.png';
-        case 'K': return 'assets/black_king.png';
-        case 'P': return 'assets/black_pawn.png';
-        case 'r': return 'assets/white_rook.png';
-        case 'n': return 'assets/white_knight.png';
-        case 'b': return 'assets/white_bishop.png';
-        case 'q': return 'assets/white_queen.png';
-        case 'k': return 'assets/white_king.png';
-        case 'p': return 'assets/white_pawn.png';
-    }
-}
-
-function setPieceHoldEvents() {
-    let mouseX, mouseY = 0;
-
-    document.addEventListener('mousemove', function(event) {
-        mouseX = event.clientX;
-        mouseY = event.clientY;
-    });
-
-    let pieces = document.getElementsByClassName('piece');
-    let movePieceInterval;
-    let hasIntervalStarted = false;
-
-    for (const piece of pieces) {
-        piece.addEventListener('mousedown', function(event) {
-            mouseX = event.clientX;
-            mouseY = event.clientY;
-        
-            if (hasIntervalStarted === false) {
-                piece.style.position = 'absolute';
-
-                curHeldPiece = piece;
-                const curHeldPieceStringPosition = piece.parentElement.id.split('');
-
-                curHeldPieceStartingPosition = [parseInt(curHeldPieceStringPosition[0]) - 1, parseInt(curHeldPieceStringPosition[1]) - 1];
-
-                movePieceInterval = setInterval(function() {
-                    piece.style.top = mouseY - piece.offsetHeight / 2 + window.scrollY + 'px';
-                    piece.style.left = mouseX - piece.offsetWidth / 2 + window.scrollX + 'px';
-                }, 1);
-        
-                hasIntervalStarted = true;
-            }
-        });
-    }
-        
-    document.addEventListener('mouseup', function(event) {
-        window.clearInterval(movePieceInterval);
-
-        if (curHeldPiece != null) {
-            const boardElement = document.querySelector('.board');
-
-            if ((event.clientX > boardElement.offsetLeft - window.scrollX && event.clientX < boardElement.offsetLeft + boardElement.offsetWidth - window.scrollX) &&
-                (event.clientY > boardElement.offsetTop - window.scrollY && event.clientY < boardElement.offsetTop + boardElement.offsetHeight - window.scrollY)) {
-                    const mousePositionOnBoardX = event.clientX - boardElement.offsetLeft + window.scrollX;
-                    const mousePositionOnBoardY = event.clientY - boardElement.offsetTop + window.scrollY;
-
-                    const boardBorderSize = parseInt(getComputedStyle(document.querySelector('.board'), null)
-                                                .getPropertyValue('border-left-width')
-                                                .split('px')[0]);
-
-                    const xPosition = Math.floor((mousePositionOnBoardX - boardBorderSize) / document.getElementsByClassName('square')[0].offsetWidth);
-                    const yPosition = Math.floor((mousePositionOnBoardY - boardBorderSize) / document.getElementsByClassName('square')[0].offsetHeight);
-
-                    const pieceReleasePosition = [yPosition, xPosition];
-
-                    if (!(pieceReleasePosition[0] == curHeldPieceStartingPosition[0] && pieceReleasePosition[1] == curHeldPieceStartingPosition[1])) {
-                        if (validateMovement(curHeldPieceStartingPosition, pieceReleasePosition)) {
-                            movePiece(curHeldPieceStartingPosition, pieceReleasePosition);
-                        }
-                    }
-                }
-
-            curHeldPiece.style.position = 'static';
-            curHeldPiece = null;
-            curHeldPieceStartingPosition = null;
-        }
-    
-        hasIntervalStarted = false;
-    });
-}
-
-function stateMovePiece(nextState, rawStartingPosition, rawEndingPosition, turnFinishing = true){
-    const startingPosition = !boardFlipped ? rawStartingPosition :
-        [7 - rawStartingPosition[0], 7 - rawStartingPosition[1]]
-    const endingPosition = !boardFlipped ? rawEndingPosition :
-        [7 - rawEndingPosition[0], 7 - rawEndingPosition[1]]
-
+function stateMovePiece(nextState, startingPosition, endingPosition, turnFinishing = true){
     const attackerPiece = nextState.board[startingPosition[0]][startingPosition[1]];
 
     if (attackerPiece !== '.') {
@@ -195,26 +62,13 @@ function stateMovePiece(nextState, rawStartingPosition, rawEndingPosition, turnF
     return nextState
 }
 
-function movePiece(rawStartingPosition, rawEndingPosition, fullTurn = true) {
+function movePiece(startingPosition, endingPosition, fullTurn = true) {
     const nextState = JSON.parse(JSON.stringify(currentState()))
-    return stateMovePiece(nextState, rawStartingPosition, rawEndingPosition, fullTurn)
-}
-
-function toggleTurn(state){
-    if (state.curPlayer === 'white') {
-        state.curPlayer = 'black';
-    } else {
-        state.curPlayer = 'white';
-    }
+    return stateMovePiece(nextState, startingPosition, endingPosition, fullTurn)
 }
 
 function resetBoard(){
     startGame()
-}
-
-function flipBoard(){
-    boardFlipped = !boardFlipped
-    refreshUI()
 }
 
 function undo(){
@@ -294,9 +148,24 @@ function validateRookMovement(startingPosition, endingPosition) {
     }
 }
 
+function positionReadyToCastle(x, y){
+    if(currentState().board[x][y] !== '.') return false
+
+    for(let i=0; 8>i; i++){
+        for(let j=0; 8>j; j++){
+            const piece = currentState().board[i][j];
+            if(piece === '.') continue;
+            if(isFriendlyPieceOnPosition([i, j])) continue;
+            if(validateMovement([i, j], [x, y])) return false;
+        }
+    }
+
+    return true
+}
+
 function validateKingMovement(pieceColor, startingPosition, endingPosition) {
     if ([-1, 0, 1].includes(endingPosition[0] - startingPosition[0]) && [-1, 0, 1].includes(endingPosition[1] - startingPosition[1])) {
-        if (isFriendlyPieceOnEndingPosition(endingPosition)) {
+        if (isFriendlyPieceOnPosition(endingPosition)) {
             return false;
         }
         // validate if move puts own king in check
@@ -306,12 +175,12 @@ function validateKingMovement(pieceColor, startingPosition, endingPosition) {
         if(pieceColor === 'white' && currentState().curPlayer === 'white' && !currentState().whiteKinkMoved){
             if(startingPosition[0] === 7 && startingPosition[1] === 4){
                 if(endingPosition[0] === 7 && endingPosition[1] === 6 && !currentState().whiteKingSideCastleMoved){
-                    if(currentState().board[7][5] === '.' && currentState().board[7][6] === '.'){
+                    if(positionReadyToCastle(7,5) && positionReadyToCastle(7,6)){
                         castling(pieceColor, true)
                     }
                 }
                 else if(endingPosition[0] === 7 && endingPosition[1] === 2 && !currentState().whiteQueenSideCastleMoved){
-                    if(currentState().board[7][1] === '.' && currentState().board[7][2] === '.'&& currentState().board[7][3] === '.') {
+                    if(positionReadyToCastle(7,1) && positionReadyToCastle(7,2) && positionReadyToCastle(7,3)) {
                         castling(pieceColor, false)
                     }
                 }
@@ -320,12 +189,12 @@ function validateKingMovement(pieceColor, startingPosition, endingPosition) {
         else if(pieceColor === 'black' && currentState().curPlayer === 'black' && !currentState().blackKinkMoved) {
             if(startingPosition[0] === 0 && startingPosition[1] === 4){
                 if(endingPosition[0] === 0 && endingPosition[1] === 6 && !currentState().blackKingSideCastleMoved){
-                    if(currentState().board[0][5] === '.' && currentState().board[0][6] === '.') {
+                    if(positionReadyToCastle(0,5) && positionReadyToCastle(0,6)) {
                         castling(pieceColor, true)
                     }
                 }
                 else if(endingPosition[0] === 0 && endingPosition[1] === 2 && !currentState().blackQueenSideCastleMoved){
-                    if(currentState().board[0][1] === '.' && currentState().board[0][2] === '.' && currentState().board[0][3] === '.') {
+                    if(positionReadyToCastle(0,1) && positionReadyToCastle(0,2) && positionReadyToCastle(0,3)) {
                         castling(pieceColor, false)
                     }
                 }
@@ -358,7 +227,7 @@ function validatePawnMovement(pawnColor, startingPosition, endingPosition) {
     if (endingPosition[0] == startingPosition[0] + direction &&
         [startingPosition[1] - 1, startingPosition[1] + 1].includes(endingPosition[1])) {
             // validate if is en passant
-            if (isEnemyPieceOnEndingPosition(endingPosition)) {
+            if (isEnemyPieceOnPosition(endingPosition)) {
                 isCapture = true;
             }
         }
@@ -369,9 +238,9 @@ function validatePawnMovement(pawnColor, startingPosition, endingPosition) {
 
     if (((endingPosition[0] == startingPosition[0] + direction || (endingPosition[0] == startingPosition[0] + direction * 2 && isFirstMove)) &&
          endingPosition[1] == startingPosition[1]) || isCapture) {
-            if (isFriendlyPieceOnEndingPosition(endingPosition)) {
+            if (isFriendlyPieceOnPosition(endingPosition)) {
                 return false;
-            } else if (!isCapture && isEnemyPieceOnEndingPosition(endingPosition)) {
+            } else if (!isCapture && isEnemyPieceOnPosition(endingPosition)) {
                 return false;
             }
 
@@ -385,7 +254,7 @@ function validatePawnMovement(pawnColor, startingPosition, endingPosition) {
 function validateKnightMovement(startingPosition, endingPosition) {
     if (([-2, 2].includes(endingPosition[0] - startingPosition[0]) && [-1, 1].includes(endingPosition[1] - startingPosition[1])) || 
         ([-2, 2].includes(endingPosition[1] - startingPosition[1]) && [-1, 1].includes(endingPosition[0] - startingPosition[0]))) {
-            if (isFriendlyPieceOnEndingPosition(endingPosition)) {
+            if (isFriendlyPieceOnPosition(endingPosition)) {
                 return false;
             }
             // validate if move puts own king in check
@@ -418,7 +287,7 @@ function validatePathIsBlocked(startingPosition, endingPosition) {
     let squareY = startingPosition[1] + yDirection;
 
     while (squareX != endingPosition[0] || squareY != endingPosition[1]) {
-        const isSquareOccupied = document.getElementById(`${squareX + 1}${squareY + 1}`).children.length > 0;
+        const isSquareOccupied = currentState().board[squareX][squareY] !== '.'
 
         if (isSquareOccupied) {
             return false;
@@ -428,7 +297,7 @@ function validatePathIsBlocked(startingPosition, endingPosition) {
         squareY += yDirection;
     }
     
-    if (isFriendlyPieceOnEndingPosition(endingPosition)) {
+    if (isFriendlyPieceOnPosition(endingPosition)) {
         return false;
     } else {
         // enemy piece has been captured
@@ -437,35 +306,23 @@ function validatePathIsBlocked(startingPosition, endingPosition) {
     return true;
 }
 
-function isFriendlyPieceOnEndingPosition(endingPosition) {
-    const destinationSquare = document.getElementById(`${endingPosition[0] + 1}${endingPosition[1] + 1}`);
+function isFriendlyPieceOnPosition(endingPosition) {
+    const destinationPiece = currentState().board[endingPosition[0]][endingPosition[1]]
 
-    if (destinationSquare.children.length > 0) {
-        const destinationPiece = destinationSquare.querySelector('.piece').id;
-    
-        if (destinationPiece == destinationPiece.toUpperCase() && currentState().curPlayer == 'black' ||
-            destinationPiece == destinationPiece.toLowerCase() && currentState().curPlayer == 'white') {
-                return true;
-        } else {
-            return false;
-        }        
+    if (destinationPiece !== '.') {
+        return destinationPiece === destinationPiece.toUpperCase() && currentState().curPlayer === 'black' ||
+            destinationPiece === destinationPiece.toLowerCase() && currentState().curPlayer === 'white';
     } else {
         return false;
     }
 }
 
-function isEnemyPieceOnEndingPosition(endingPosition) {
-    const destinationSquare = document.getElementById(`${endingPosition[0] + 1}${endingPosition[1] + 1}`);
+function isEnemyPieceOnPosition(endingPosition) {
+    const destinationPiece = currentState().board[endingPosition[0]][endingPosition[1]]
 
-    if (destinationSquare.children.length > 0) {
-        const destinationPiece = destinationSquare.querySelector('.piece').id;
-    
-        if (destinationPiece == destinationPiece.toUpperCase() && currentState().curPlayer == 'white' ||
-            destinationPiece == destinationPiece.toLowerCase() && currentState().curPlayer == 'black') {
-                return true;
-        } else {
-            return false;
-        }        
+    if (destinationPiece !== '.') {
+        return destinationPiece === destinationPiece.toUpperCase() && currentState().curPlayer === 'white' ||
+            destinationPiece === destinationPiece.toLowerCase() && currentState().curPlayer === 'black';
     } else {
         return false;
     }
