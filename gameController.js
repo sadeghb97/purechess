@@ -62,6 +62,7 @@ function stateMovePiece(nextState, startingPosition, endingPosition, turnFinishi
                 else nextState.board[endingPosition[0]][endingPosition[1]] = 'Q'
             }
 
+            stateStartAndEndPosition(nextState, startingPosition, endingPosition)
             if(turnFinishing) finishTurn(nextState)
         }
     }
@@ -70,7 +71,7 @@ function stateMovePiece(nextState, startingPosition, endingPosition, turnFinishi
 }
 
 function movePiece(startingPosition, endingPosition, fullTurn = true) {
-    const nextState = JSON.parse(JSON.stringify(currentState()))
+    const nextState = getCurrentStateClone()
     return stateMovePiece(nextState, startingPosition, endingPosition, fullTurn)
 }
 
@@ -107,30 +108,45 @@ function redo(){
 }
 
 function castling(pieceColor, isKingSide){
+    let cloneState = null
+    let sp = null
+    let ep = null
+
     if(pieceColor === 'white'){
         if(isKingSide){
-            const nextState = movePiece([7, 4], [7, 6], false)
-            stateMovePiece(nextState, [7, 7], [7, 5], true)
+            sp = [7, 4]
+            ep = [7, 7]
+            cloneState = movePiece([7, 4], [7, 6], false)
+            cloneState = stateMovePiece(cloneState, [7, 7], [7, 5], false)
         }
         else if(!isKingSide){
-            const nextState = movePiece([7, 4], [7, 2], false)
-            stateMovePiece(nextState, [7, 0], [7, 3], true)
+            sp = [7, 4]
+            ep = [7, 0]
+            cloneState = movePiece([7, 4], [7, 2], false)
+            cloneState = stateMovePiece(cloneState, [7, 0], [7, 3], false)
         }
     }
     else {
         if(isKingSide){
-            const nextState = movePiece([0, 4], [0, 6], false)
-            stateMovePiece(nextState, [0, 7], [0, 5], true)
+            sp = [0, 4]
+            ep = [0, 7]
+            cloneState = movePiece([0, 4], [0, 6], false)
+            cloneState = stateMovePiece(cloneState, [0, 7], [0, 5], false)
         }
         else if(!isKingSide){
-            const nextState = movePiece([0, 4], [0, 2], false)
-            stateMovePiece(nextState, [0, 0], [0, 3], true)
+            sp = [0, 4]
+            ep = [0, 0]
+            cloneState = movePiece([0, 4], [0, 2], false)
+            cloneState = stateMovePiece(cloneState, [0, 0], [0, 3], false)
         }
     }
+
+    stateStartAndEndPosition(cloneState, sp, ep)
+    finishTurn(cloneState)
 }
 
 function enPassant(startingPosition){
-    const nextState = JSON.parse(JSON.stringify(currentState()))
+    const nextState = getCurrentStateClone()
     const attackerPiece = nextState.board[startingPosition[0]][startingPosition[1]];
 
     nextState.enPos = null
@@ -142,6 +158,8 @@ function enPassant(startingPosition){
     else {
         nextState.board[currentState().enPos[0] - 1][currentState().enPos[1]] = '.'
     }
+
+    stateStartAndEndPosition(nextState, startingPosition, currentState().enPos)
     finishTurn(nextState)
 }
 

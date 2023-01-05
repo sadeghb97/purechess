@@ -22,11 +22,31 @@ function refreshUI() {
             loadPiece(curBoard[i][j], [i + 1, j + 1]);
         }
     }
+
+    if(currentState().startPosition != null && currentState().endPosition != null){
+        const sp = currentState().startPosition
+        const ep = currentState().endPosition
+        const startSquare = document.getElementById(`${sp[0] + 1}${sp[1] + 1}`);
+        const endSquare = document.getElementById(`${ep[0] + 1}${ep[1] + 1}`);
+
+        let lmEffect = "last-move"
+        if("lmrate" in currentState()){
+            console.log(currentState().lmrate)
+            if(currentState().lmrate === "blunder") lmEffect = "blunder"
+            else if(currentState().lmrate === "perfect") lmEffect = "perfect"
+        }
+
+        startSquare.classList.add(lmEffect);
+        endSquare.classList.add(lmEffect);
+    }
     if(!readOnly) setPieceHoldEvents();
 }
 
 function loadPiece(piece, position) {
     const squareElement = document.getElementById(`${position[0]}${position[1]}`);
+    squareElement.classList.remove("last-move");
+    squareElement.classList.remove("blunder");
+    squareElement.classList.remove("perfect");
     if (piece == '.') {
         if(squareElement.hasChildNodes())
             squareElement.removeChild(squareElement.children[0])

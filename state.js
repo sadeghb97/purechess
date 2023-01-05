@@ -23,6 +23,8 @@ function initState(){
         blackKingSideCastleMoved: false,
         blackQueenSideCastleMoved: false,
         blackKinkMoved: false,
+        startPosition: null,
+        endPosition: null,
         epPos: null
     }
 
@@ -31,6 +33,12 @@ function initState(){
 
 function currentState(){
     return game.moveStack[game.statePosition]
+}
+
+function getCurrentStateClone(){
+    const clone = JSON.parse(JSON.stringify(currentState()))
+    clone.lmrate = "normal"
+    return clone
 }
 
 function pushState(state){
@@ -63,8 +71,28 @@ function toggleTurn(state){
     }
 }
 
+function stateStartAndEndPosition(state, startingPosition, endingPosition){
+    state.startPosition = startingPosition
+    state.endPosition = endingPosition
+}
+
 function finalPosition(rawPosition){
     return !boardFlipped ? rawPosition : [7 - rawPosition[0], 7 - rawPosition[1]]
+}
+
+function rateMoveNormal(){
+    currentState().lmrate = "normal"
+    refreshUI()
+}
+
+function rateMoveBlunder(){
+    currentState().lmrate = "blunder"
+    refreshUI()
+}
+
+function rateMovePerfect(){
+    currentState().lmrate = "perfect"
+    refreshUI()
 }
 
 function loadGame(filename, startFlag = true){

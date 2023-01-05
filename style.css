@@ -81,11 +81,53 @@ button {
 }
 
 .black {
-    background: #774C3B;
+    --black-r: 119;
+    --black-g: 76;
+    --black-b: 59;
+    --black-intense-r: 200;
+    --black-intense-g: 126;
+    --black-intense-b: 149;
+    background: rgba(var(--black-r), var(--black-g), var(--black-b), 1);
+}
+
+.black.last-move {
+    will-change: transform;
+    background-color: rgba(var(--black-r), var(--black-intense-g), var(--black-b), 1);
+}
+
+.black.blunder {
+    will-change: transform;
+    background-color: rgba(var(--black-intense-r), var(--black-g), var(--black-b), 1);
+}
+
+.black.perfect {
+    will-change: transform;
+    background-color: rgba(var(--black-r), var(--black-g), var(--black-intense-b), 1);
 }
 
 .white {
-    background: #C99468;
+    --white-r: 201;
+    --white-g: 148;
+    --white-b: 104;
+    --white-intense-r: 255;
+    --white-intense-g: 198;
+    --white-intense-b: 184;
+    background: rgba(var(--white-r), var(--white-g), var(--white-b), 1);
+}
+
+.white.last-move {
+    will-change: transform;
+    background-color: rgba(var(--white-r), var(--white-intense-g), var(--white-b), 1);
+}
+
+.white.blunder {
+    will-change: transform;
+    background-color: rgba(var(--white-intense-r), var(--white-g), var(--white-b), 1);
+}
+
+.white.perfect {
+    will-change: transform;
+    background-color: rgba(var(--white-r), var(--white-g), var(--white-intense-b), 1);
 }
 
 .button {
@@ -99,4 +141,16 @@ button {
     text-decoration: none;
     display: inline-block;
     font-size: 16px;
+}
+
+.button.blunder {
+    background-color: #e54b7e; /* Green */
+}
+
+.button.perfect {
+    background-color: #027074; /* Green */
+}
+
+.button.normal {
+    background-color: #8e9206; /* Green */
 }
