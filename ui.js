@@ -31,7 +31,6 @@ function refreshUI() {
 
         let lmEffect = "last-move"
         if("lmrate" in currentState()){
-            console.log(currentState().lmrate)
             if(currentState().lmrate === "blunder") lmEffect = "blunder"
             else if(currentState().lmrate === "perfect") lmEffect = "perfect"
         }

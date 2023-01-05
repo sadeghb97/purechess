@@ -16,6 +16,5 @@ function getRandomInt(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
     const rnd = Math.random()
-    console.log("rnd", rnd, rnd * (max - min) + min)
     return Math.floor(rnd * (max - min) + min);
 }

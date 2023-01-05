@@ -137,7 +137,6 @@ function save(){
         finalFn = "tr-" + openings.value + "-" + filenameInp.value
     }
     game.extra = extra
-    console.log("Extra", game.extra)
 
     game.boardFlipped = boardFlipped
     const gameStr = JSON.stringify(game)
