@@ -78,14 +78,46 @@ function loadGame(filename, startFlag = true){
 }
 
 function saveGame(){
+    openModal();
+}
+
+function save(){
+    const cateSelect = document.getElementById("category");
+    const filenameInp = document.getElementById("filename")
+    let extra = {}
+    let finalFn = ""
+
+    if(cateSelect.value === 'full_game'){
+        const white_name = document.getElementById("white_name")
+        const black_name = document.getElementById("black_name")
+        const result = document.getElementById("result")
+        extra = {
+            type: "full_game",
+            white_name: white_name.value,
+            black_name: black_name.value,
+            result: result.value
+        }
+        finalFn = "fg-" + filenameInp.value
+    }
+    else {
+        const openings = document.getElementById("openings")
+        extra = {
+            type: "trap",
+            opening: openings.value,
+            trap_name: filenameInp.value
+        }
+        finalFn = "tr-" + openings.value + "-" + filenameInp.value
+    }
+    game.extra = extra
+    console.log("Extra", game.extra)
+
     game.boardFlipped = boardFlipped
     const gameStr = JSON.stringify(game)
 
-    const filename = prompt("Please enter filename");
     const link = document.createElement("a");
     const file = new Blob([gameStr], { type: 'text/plain' });
     link.href = URL.createObjectURL(file);
-    link.download = filename;
+    link.download = finalFn;
     link.click();
     URL.revokeObjectURL(link.href);
 }

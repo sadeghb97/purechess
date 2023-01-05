@@ -1,2 +1,2 @@
 readOnly = true
-studyGame("ruilopez")
+loadRepository()

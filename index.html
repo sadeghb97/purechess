@@ -5,7 +5,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <link rel="icon" href="assets/black_knight.png" type="image/png" sizes="16x16">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="lib/modal.css">
 
     <title>Web Chess</title>
 </head>
@@ -100,14 +102,72 @@
             <button class="button" onclick="flipBoard()">Flip</button>
             <button class="button" onclick="resetBoard()">Reset</button>
         </div>
-        <div style="display: flex; justify-content: center; margin-top: 24px;">
+        <div class="jsModalTrigger" style="display: flex; justify-content: center; margin-top: 24px;">
             <button class="button" style="width: 200px;" onclick="saveGame()">Save Game</button>
         </div>
     </div>
 
+    <script src="lib/modal.js"></script>
     <script src="state.js"></script>
     <script src="ui.js"></script>
     <script src="gameController.js"></script>
     <script src="play.js"></script>
+
+    <div id="jsModal" class="modal">
+        <div class="modal__overlay jsOverlay"></div>
+        <div class="modal__container">
+            <div style="margin-bottom: 16px;">Export Game</div>
+            <button class="modal__close jsModalClose">&#10005;</button>
+
+            <div>
+                <label for="category">Category:</label>
+                <select name="category" id="category" style="width: 120px; height: 38px;" onchange="onCategoryChange()">
+                    <option value="traps">Traps</option>
+                    <option value="full_game">Full Game</option>
+                </select>
+            </div>
+
+            <div id="fg_fields" style="display: none">
+                <div class="field">
+                    <label for="white_name">White:</label>
+                    <input name="white_name" id="white_name" style="width: 120px; height: 38px;" />
+                </div>
+
+                <div class="field">
+                    <label for="black_name">Black:</label>
+                    <input name="black_name" id="black_name" style="width: 120px; height: 38px;" />
+                </div>
+
+                <div class="field">
+                    <label for="result">Result:</label>
+                    <select name="result" id="result" style="width: 120px; height: 38px;">
+                        <option value="w">W</option>
+                        <option value="b">B</option>
+                        <option value="draw">Draw</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="tr_fields">
+                <div class="field">
+                    <label for="openings">Result:</label>
+                    <select name="openings" id="openings" style="width: 120px; height: 38px;">
+                        <option value="rui_lopez">Rui Lopez</option>
+                        <option value="danish_gambit">Danish Gambit</option>
+                        <option value="stafford_gambit">Stafford Gambit</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="filename">Trap Name:</label>
+                <input name="filename" id="filename" style="width: 120px; height: 38px;" />
+            </div>
+
+            <div class="centcont">
+                <button class="button" style="width: 140px;" onclick="save()">Save</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

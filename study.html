@@ -5,12 +5,16 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <link rel="icon" href="assets/black_knight.png" type="image/png" sizes="16x16">
     <link rel="stylesheet" href="style.css">
 
-    <title>Web Chess</title>
+    <title>Study</title>
 </head>
 <body>
     <div id="main">
+        <div class="centcont" id="game_title"
+             style="margin-top: 14px; font-weight: bold; font-size: 16pt"></div>
+
         <div class="board">
             <div class="row">
                 <div id="11" class="square white"></div>
@@ -100,12 +104,17 @@
             <button class="button" onclick="flipBoard()">Flip</button>
             <button class="button" onclick="loadFirstState(true)">Reset</button>
         </div>
+
+        <div class="centcont" id="games_library" style="margin-top: 64px; margin-bottom: 32px;">
+
+        </div>
     </div>
 
     <script src="state.js"></script>
     <script src="ui.js"></script>
     <script src="utils.js"></script>
     <script src="gameController.js"></script>
+    <script src="repository.js"></script>
     <script src="study.js"></script>
 </body>
 </html>
