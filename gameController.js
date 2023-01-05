@@ -57,7 +57,7 @@ function stateMovePiece(nextState, startingPosition, endingPosition, turnFinishi
             nextState.board[startingPosition[0]][startingPosition[1]] = '.';
             nextState.board[endingPosition[0]][endingPosition[1]] = attackerPiece;
 
-            if(attackerPiece.toLowerCase() === 'p' && endingPosition[0] === 7 || endingPosition[0] === 0){
+            if(attackerPiece.toLowerCase() === 'p' && (endingPosition[0] === 7 || endingPosition[0] === 0)){
                 if(attackerPiece === 'p') nextState.board[endingPosition[0]][endingPosition[1]] = 'q'
                 else nextState.board[endingPosition[0]][endingPosition[1]] = 'Q'
             }
@@ -321,7 +321,7 @@ function validatePawnMovement(pawnColor, startingPosition, endingPosition) {
             // validate if move puts own king in check
             return true;
     } else {
-        if(currentState().enPos !== null && endingPosition[0] === currentState().enPos[0] && endingPosition[1] === currentState().enPos[1]){
+        if(currentState().enPos != null && endingPosition[0] === currentState().enPos[0] && endingPosition[1] === currentState().enPos[1]){
             if(pawnColor === 'white' && currentState().curPlayer === 'white'){
                 const isEnPassant = Math.abs(endingPosition[1] - startingPosition[1]) === 1 &&
                     startingPosition[0] - endingPosition[0] === 1
