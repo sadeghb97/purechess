@@ -19,6 +19,9 @@
                 <div id="top_username" class="username"></div>
                 <div id="top_status" class="status"></div>
             </div>
+            <div class="card timer" id="top_time">
+
+            </div>
         </div>
         <div class="board">
             <div class="row">
@@ -108,6 +111,9 @@
                 <div id="bottom_username" class="username"></div>
                 <div id="bottom_status" class="status"></div>
             </div>
+            <div class="card timer" id="bottom_time">
+
+            </div>
         </div>
 
         <div style="display: flex; justify-content: center; margin-top: 24px;">
@@ -115,6 +121,8 @@
             <button class="button" onclick="redo()">Redo</button>
             <button class="button" onclick="flipBoard()">Flip</button>
             <button class="button" onclick="resetBoard()">Reset</button>
+            <button class="button" onclick="startClock()">Start Clock</button>
+            <button class="button" onclick="pauseClock()">Stop Clock</button>
         </div>
         <div style="display: flex; justify-content: center; margin-top: 24px;">
             <button class="button blunder" onclick="rateMoveBlunder()">Blunder</button>

@@ -1,3 +1,4 @@
+let intervalID = 0
 let game = {
     statePosition: 0,
     white_name: "White",
@@ -6,8 +7,11 @@ let game = {
 }
 
 function initState(){
+    clearInterval(intervalID)
     game.statePosition = 0;
     game.moveStack = [];
+    delete game.white_time
+    delete game.black_time
 
     const cState = {
         board: [['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
@@ -59,6 +63,50 @@ function prevState(){
 
 function nextState(){
     if(game.statePosition < (game.moveStack.length - 1)) game.statePosition++
+}
+
+function initClock(){
+    clearInterval(intervalID)
+    const inp = prompt("Please enter timers config: ")
+    const conf = inp.split("-");
+    if(isNaN(conf[0]) || isNaN(conf[1])) return
+    const bt = parseInt(conf[0]) * 60000
+    const rt = parseInt(conf[1]) * 1000
+
+    game.white_time = bt
+    game.black_time = bt
+    game.reward_time = rt
+}
+
+function pauseClock(){
+    clearInterval(intervalID)
+}
+
+function startClock(){
+    clearInterval(intervalID)
+    if(game.white_time == null || game.black_time == null) initClock()
+
+    intervalID = setInterval(() => {
+        if(currentState().curPlayer === "white"){
+            if(game.white_time >= 50) game.white_time -= 50
+            else game.white_time = 0
+        }
+        else {
+            if(game.black_time >= 50) game.black_time -= 50
+            else game.black_time = 0
+        }
+
+        refreshTimers()
+    }, 50)
+}
+
+function incrementTimer(){
+    if (currentState().curPlayer === 'white') {
+        if(game.white_time != null) game.white_time += game.reward_time
+    }
+    else {
+        if(game.black_time != null) game.black_time += game.reward_time
+    }
 }
 
 function clearStatesAfterCurrent(){

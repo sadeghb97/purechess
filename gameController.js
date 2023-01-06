@@ -79,6 +79,7 @@ function finishTurn(nextState){
     if(!checkKingsSafety(nextState)) return
     toggleTurn(nextState)
     pushState(nextState)
+    incrementTimer()
     refreshUI()
 }
 

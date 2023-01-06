@@ -56,6 +56,7 @@ function refreshUI() {
             bottomStatusEl.innerText = ""
         }
     }
+    refreshTimers()
 
     if(boardFlipped){
         const flippedBoard = []
@@ -93,6 +94,35 @@ function refreshUI() {
         endSquare.classList.add(lmEffect);
     }
     if(!readOnly) setPieceHoldEvents();
+}
+
+function refreshTimers(){
+    const whiteTime = game.white_time != null ? Math.ceil(game.white_time / 1000) : null
+    const blackTime = game.black_time != null ? Math.ceil(game.black_time / 1000) : null
+    const whiteTimeStr = Math.trunc(whiteTime / 60) + ":" + whiteTime % 60
+    const blackTimeStr = Math.trunc(blackTime / 60) + ":" + blackTime % 60
+    const topTimeEl = document.getElementById("top_time")
+    const bottomTimeEl = document.getElementById("bottom_time")
+
+    if(whiteTime != null && blackTime != null){
+        topTimeEl.style.display = "block"
+        bottomTimeEl.style.display = "block"
+        topTimeEl.innerText = !boardFlipped ? blackTimeStr : whiteTimeStr
+        bottomTimeEl.innerText = !boardFlipped ? whiteTimeStr : blackTimeStr
+
+        if(whiteTime <= 0) {
+            if(!boardFlipped) bottomTimeEl.style.borderColor = "red"
+            else topTimeEl.style.borderColor = "red"
+        }
+        if(blackTime <= 0) {
+            if(!boardFlipped) topTimeEl.style.borderColor = "red"
+            else bottomTimeEl.style.borderColor = "red"
+        }
+    }
+    else {
+        topTimeEl.style.display = "none"
+        bottomTimeEl.style.display = "none"
+    }
 }
 
 function loadPiece(piece, position) {
