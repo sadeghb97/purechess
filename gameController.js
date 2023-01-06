@@ -80,13 +80,6 @@ function finishTurn(nextState){
     toggleTurn(nextState)
     pushState(nextState)
     refreshUI()
-
-    const kSafety = checkKingsSafety(currentState())
-    if(!kSafety){
-        alert("King In Danger!")
-        undo()
-        clearStatesAfterCurrent()
-    }
 }
 
 function getPieceValue(piece){

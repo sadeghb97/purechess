@@ -1,21 +1,30 @@
-function checkKingsSafety(state){
-    const cloneState = JSON.parse(JSON.stringify(state))
-    cloneState.prevent_castling = true
-    cloneState.prevent_en_passant = true
-    toggleTurn(cloneState)
-
+function getKingsPos(state){
     let whiteKingPos = null
     let blackKingPos = null
 
     for(let i=0; 8>i; i++){
         for(let j=0; 8>j; j++){
-            const piece = cloneState.board[i][j]
+            const piece = state.board[i][j]
             if(piece === 'k') whiteKingPos = [i, j]
             else if(piece === 'K') blackKingPos = [i, j]
         }
     }
 
-    return checkKingSafety(cloneState, whiteKingPos) && checkKingSafety(cloneState, blackKingPos)
+    return {
+        'white': whiteKingPos,
+        'black': blackKingPos
+    }
+}
+
+function checkKingsSafety(state){
+    const cloneState = JSON.parse(JSON.stringify(state))
+    cloneState.prevent_castling = true
+    cloneState.prevent_en_passant = true
+    toggleTurn(cloneState)
+    const kingsPos = getKingsPos(cloneState)
+
+    return checkKingSafety(cloneState, kingsPos.white) &&
+        checkKingSafety(cloneState, kingsPos.black)
 }
 
 function checkKingSafety(state, kingPos){
@@ -31,7 +40,6 @@ function checkKingSafety(state, kingPos){
             if(kingColor === attackerPieceColor) continue
 
             if(validateMovement(state, [i, j], kingPos)){
-                console.log("False", [i, j], kingPos)
                 return false
             }
         }
