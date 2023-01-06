@@ -121,17 +121,14 @@ button {
 }
 
 .black.last-move {
-    will-change: transform;
     background-color: rgba(var(--black-r), var(--black-intense-g), var(--black-b), 1);
 }
 
 .black.blunder {
-    will-change: transform;
     background-color: rgba(var(--black-intense-r), var(--black-g), var(--black-b), 1);
 }
 
 .black.perfect {
-    will-change: transform;
     background-color: rgba(var(--black-r), var(--black-g), var(--black-intense-b), 1);
 }
 
@@ -146,17 +143,14 @@ button {
 }
 
 .white.last-move {
-    will-change: transform;
     background-color: rgba(var(--white-r), var(--white-intense-g), var(--white-b), 1);
 }
 
 .white.blunder {
-    will-change: transform;
     background-color: rgba(var(--white-intense-r), var(--white-g), var(--white-b), 1);
 }
 
 .white.perfect {
-    will-change: transform;
     background-color: rgba(var(--white-r), var(--white-g), var(--white-intense-b), 1);
 }
 

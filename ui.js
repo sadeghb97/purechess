@@ -177,7 +177,7 @@ function setPieceHoldEvents() {
                     const correctStartPosition = finalPosition(curHeldPieceStartingPosition)
                     const correctEndPosition = finalPosition(pieceReleasePosition)
 
-                    if (validateMovement(correctStartPosition, correctEndPosition)) {
+                    if (validateMovement(currentState(), correctStartPosition, correctEndPosition)) {
                         movePiece(correctStartPosition, correctEndPosition);
                     }
                 }
