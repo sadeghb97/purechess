@@ -1,24 +1,3 @@
-games = {
-    traps:[
-        {
-            opening_name: "Stafford Gambit",
-            trp_list: [
-                {
-                    title: "Oh No My Queen!",
-                    filename: "tr-stafford_gambit-OhNoMyQueen"
-                },
-                {
-                    title: "Oh No My Knight!",
-                    filename: "tr-stafford_gambit-OhNoMyKnight"
-                },
-            ]
-        }
-    ],
-    full_games: [
-
-    ]
-}
-
 function loadRepository(){
     const libraryDiv = document.getElementById("games_library");
     if(games.traps.length > 0){
@@ -85,4 +64,49 @@ function loadRandomTrap(){
     const trIndex = getRandomInt(0, trSize)
 
     loadTrap(games.traps[opIndex], games.traps[opIndex].trp_list[trIndex])
+}
+
+games = {
+    traps:[
+        {
+            opening_name: "Stafford Gambit",
+            trp_list: [
+                {
+                    title: "Oh No My Queen!",
+                    filename: "tr-stafford_gambit-OhNoMyQueen"
+                },
+                {
+                    title: "Oh No My Knight!",
+                    filename: "tr-stafford_gambit-OhNoMyKnight"
+                },
+                {
+                    title: "Take my knight, but I'll take your rook...",
+                    filename: "tr-stafford_gambit-TakeMyKnight"
+                },
+                {
+                    title: "Most common trap",
+                    filename: "tr-stafford_gambit-MostCommonTraps"
+                },
+                {
+                    title: "Punishing Natural Development",
+                    filename: "tr-stafford_gambit-NaturalDevelopment"
+                },
+                {
+                    title: "My Favorite Trap (Sometimes works against GMs!)",
+                    filename: "tr-stafford_gambit-WorksAgainstGMs"
+                },
+                {
+                    title: "Everyone falls for this trap 😁",
+                    filename: "tr-stafford_gambit-EveryoneFallsForThisTrap"
+                },
+                {
+                    title: "Miscellaneous Lines",
+                    filename: "tr-stafford_gambit-MiscellaneousLines"
+                },
+            ]
+        }
+    ],
+    full_games: [
+
+    ]
 }
