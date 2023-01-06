@@ -51,9 +51,35 @@ button {
     cursor: pointer;
 }
 
+.prof-container {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 600px;
+    display: flex;
+    height: 40px;
+    justify-content: flex-start;
+}
+
+.username {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.status {
+    font-size: 12px;
+}
+
+.prof-container img {
+    width: 30px;
+    height: 30px;
+    margin-right: 6px;
+}
+
 .board {
     width: min-content;
-    margin: 32px auto 0;
+    margin: 0px auto 0;
     border: 10px solid red;
     border-radius: 6px;
 

@@ -5,6 +5,57 @@ function flipBoard(){
 
 function refreshUI() {
     let curBoard = JSON.parse(JSON.stringify(currentState().board))
+    let blackValue = 0
+    let whiteValue = 0
+
+    curBoard.forEach((row) => {
+        row.forEach((p) => {
+            if(p === p.toLowerCase()){
+                whiteValue += getPieceValue(p)
+            }
+            else {
+                blackValue += getPieceValue(p)
+            }
+        })
+    })
+    const whiteName = "white_name" in game ? game.white_name : "White"
+    const blackName = "black_name" in game ? game.black_name : "Black"
+    const whiteStatus = whiteValue - blackValue
+    const blackStatus = blackValue - whiteValue
+    const blackAvatar = "assets/black_avatar.png"
+    const whiteAvatar = "assets/white_avatar.png"
+
+    const topAvatar = !boardFlipped ? blackAvatar : whiteAvatar
+    const bottomAvatar = !boardFlipped ? whiteAvatar : blackAvatar
+    const topUsername = !boardFlipped ? blackName : whiteName
+    const bottomUsername = !boardFlipped ? whiteName : blackName
+    let topStatus = !boardFlipped ? blackStatus : whiteStatus
+    let bottomStatus = !boardFlipped ? whiteStatus : blackStatus
+    topStatus = topStatus > 0 ? "+" + topStatus : topStatus
+    bottomStatus = bottomStatus > 0 ? "+" + bottomStatus : bottomStatus
+
+    const topAvatarEl = document.getElementById("top_avatar")
+    const bottomAvatarEl = document.getElementById("bottom_avatar")
+    const topUsernameEl = document.getElementById("top_username")
+    const bottomUsernameEl = document.getElementById("bottom_username")
+    const topStatusEl = document.getElementById("top_status")
+    const bottomStatusEl = document.getElementById("bottom_status")
+
+    if(topAvatarEl != null){
+        topAvatarEl.src = topAvatar
+        topUsernameEl.innerText = topUsername
+        bottomAvatarEl.src = bottomAvatar
+        bottomUsernameEl.innerText = bottomUsername
+
+        if(blackStatus !== 0){
+            topStatusEl.innerText = topStatus
+            bottomStatusEl.innerText = bottomStatus
+        }
+        else {
+            topStatusEl.innerText = ""
+            bottomStatusEl.innerText = ""
+        }
+    }
 
     if(boardFlipped){
         const flippedBoard = []

@@ -1,5 +1,7 @@
 let game = {
     statePosition: 0,
+    white_name: "White",
+    black_name: "Black",
     moveStack: null
 }
 
