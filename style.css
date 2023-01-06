@@ -20,11 +20,13 @@ body {
     display: block;
     font-weight: bold;
     font-size: 24pt;
+    text-align: center;
 }
 
 .category {
     display: block;
     font-size: 24pt;
+    text-align: center;
 }
 
 .game_name {
@@ -32,6 +34,8 @@ body {
     font-size: 14pt;
     margin-left: 12px;
     margin-right: 12px;
+    max-width: 200px;
+    cursor: pointer;
     background-color: goldenrod;
 }
 
