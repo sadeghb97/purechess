@@ -24,8 +24,11 @@ function refreshUI() {
     }
 
     if(currentState().startPosition != null && currentState().endPosition != null){
-        const sp = currentState().startPosition
-        const ep = currentState().endPosition
+        const sp = !boardFlipped ? currentState().startPosition :
+            [7 - currentState().startPosition[0], 7 - currentState().startPosition[1]]
+        const ep = !boardFlipped ? currentState().endPosition :
+            [7 - currentState().endPosition[0], 7 - currentState().endPosition[1]]
+
         const startSquare = document.getElementById(`${sp[0] + 1}${sp[1] + 1}`);
         const endSquare = document.getElementById(`${ep[0] + 1}${ep[1] + 1}`);
 
