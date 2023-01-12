@@ -55,3 +55,8 @@
   background-color: #fff;
   text-align: center;
 }
+
+.modal-input {
+  width: 120px;
+  height: 38px;
+}

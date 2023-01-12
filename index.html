@@ -149,7 +149,7 @@
 
             <div>
                 <label for="category">Category:</label>
-                <select name="category" id="category" style="width: 120px; height: 38px;" onchange="onCategoryChange()">
+                <select name="category" id="category" class="modal-input" onchange="onCategoryChange()">
                     <option value="traps">Traps</option>
                     <option value="full_game">Full Game</option>
                 </select>
@@ -158,17 +158,17 @@
             <div id="fg_fields" style="display: none">
                 <div class="field">
                     <label for="white_name">White:</label>
-                    <input name="white_name" id="white_name" style="width: 120px; height: 38px;" />
+                    <input name="white_name" id="white_name" style="" />
                 </div>
 
                 <div class="field">
                     <label for="black_name">Black:</label>
-                    <input name="black_name" id="black_name" style="width: 120px; height: 38px;" />
+                    <input name="black_name" id="black_name" class="modal-input" />
                 </div>
 
                 <div class="field">
                     <label for="result">Result:</label>
-                    <select name="result" id="result" style="width: 120px; height: 38px;">
+                    <select name="result" id="result" class="modal-input">
                         <option value="w">W</option>
                         <option value="b">B</option>
                         <option value="draw">Draw</option>
@@ -179,7 +179,7 @@
             <div id="tr_fields">
                 <div class="field">
                     <label for="openings">Result:</label>
-                    <select name="openings" id="openings" style="width: 120px; height: 38px;">
+                    <select name="openings" id="openings" class="modal-input">
                         <option value="rui_lopez">Rui Lopez</option>
                         <option value="danish_gambit">Danish Gambit</option>
                         <option value="stafford_gambit">Stafford Gambit</option>
@@ -189,7 +189,7 @@
 
             <div class="field">
                 <label for="filename">Trap Name:</label>
-                <input name="filename" id="filename" style="width: 120px; height: 38px;" />
+                <input name="filename" id="filename" class="modal-input" />
             </div>
 
             <div class="centcont">
