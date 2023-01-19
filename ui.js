@@ -119,9 +119,9 @@ function refreshTimers(){
             else bottomTimeEl.style.borderColor = "red"
         }
     }
-    else {
-        topTimeEl.style.display = "none"
-        bottomTimeEl.style.display = "none"
+    else if(topTimeEl || bottomTimeEl) {
+        if(topTimeEl) topTimeEl.style.display = "none"
+        if(bottomTimeEl) bottomTimeEl.style.display = "none"
     }
 }
 

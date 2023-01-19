@@ -5,6 +5,11 @@
     box-sizing: border-box;
 }
 
+#main {
+    display: flex;
+    justify-content: center
+}
+
 body {
     font: 400 14px Roboto, sans-serif;
     background: #f0f0f5;
@@ -173,13 +178,15 @@ button {
 .button {
     margin-left: 8px;
     margin-right: 8px;
+    margin-bottom: 8px;
     background-color: #4CAF50; /* Green */
     border: none;
     color: white;
     padding: 15px 32px;
     text-align: center;
     text-decoration: none;
-    display: inline-block;
+    display: block;
+    width: 120px;
     font-size: 16px;
 }
 
@@ -193,4 +200,13 @@ button {
 
 .button.normal {
     background-color: #8e9206; /* Green */
+}
+
+.actionbar {
+    display: flex;
+    align-items: center;
+    margin-top: 45px;
+    margin-left: 8px;
+    margin-right: 8px;
+    height: 600px;
 }

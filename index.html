@@ -13,124 +13,127 @@
 </head>
 <body>
     <div id="main">
-        <div class="prof-container">
-            <img id="top_avatar" src="assets/black_avatar.png" />
+        <div class="actionbar">
             <div>
-                <div id="top_username" class="username"></div>
-                <div id="top_status" class="status"></div>
+                <button class="button" onclick="undo()">Undo</button>
+                <button class="button" onclick="redo()">Redo</button>
+                <button class="button" onclick="flipBoard()">Flip</button>
+                <button class="button" onclick="resetBoard()">Reset</button>
+                <button class="button" onclick="startClock()">Start Clock</button>
+                <button class="button" onclick="pauseClock()">Stop Clock</button>
+                <button class="button jsModalTrigger" onclick="saveGame()">Save</button>
             </div>
-            <div class="card timer" id="top_time">
+        </div>
+        <div>
+            <div class="prof-container">
+                <img id="top_avatar" src="assets/black_avatar.png" />
+                <div>
+                    <div id="top_username" class="username"></div>
+                    <div id="top_status" class="status"></div>
+                </div>
+                <div class="card timer" id="top_time">
 
+                </div>
+            </div>
+            <div class="board">
+                <div class="row">
+                    <div id="11" class="square white"></div>
+                    <div id="12" class="square black"></div>
+                    <div id="13" class="square white"></div>
+                    <div id="14" class="square black"></div>
+                    <div id="15" class="square white"></div>
+                    <div id="16" class="square black"></div>
+                    <div id="17" class="square white"></div>
+                    <div id="18" class="square black"></div>
+                </div>
+                <div class="row">
+                    <div id="21" class="square black"></div>
+                    <div id="22" class="square white"></div>
+                    <div id="23" class="square black"></div>
+                    <div id="24" class="square white"></div>
+                    <div id="25" class="square black"></div>
+                    <div id="26" class="square white"></div>
+                    <div id="27" class="square black"></div>
+                    <div id="28" class="square white"></div>
+                </div>
+                <div class="row">
+                    <div id="31" class="square white"></div>
+                    <div id="32" class="square black"></div>
+                    <div id="33" class="square white"></div>
+                    <div id="34" class="square black"></div>
+                    <div id="35" class="square white"></div>
+                    <div id="36" class="square black"></div>
+                    <div id="37" class="square white"></div>
+                    <div id="38" class="square black"></div>
+                </div>
+                <div class="row">
+                    <div id="41" class="square black"></div>
+                    <div id="42" class="square white"></div>
+                    <div id="43" class="square black"></div>
+                    <div id="44" class="square white"></div>
+                    <div id="45" class="square black"></div>
+                    <div id="46" class="square white"></div>
+                    <div id="47" class="square black"></div>
+                    <div id="48" class="square white"></div>
+                </div>
+                <div class="row">
+                    <div id="51" class="square white"></div>
+                    <div id="52" class="square black"></div>
+                    <div id="53" class="square white"></div>
+                    <div id="54" class="square black"></div>
+                    <div id="55" class="square white"></div>
+                    <div id="56" class="square black"></div>
+                    <div id="57" class="square white"></div>
+                    <div id="58" class="square black"></div>
+                </div>
+                <div class="row">
+                    <div id="61" class="square black"></div>
+                    <div id="62" class="square white"></div>
+                    <div id="63" class="square black"></div>
+                    <div id="64" class="square white"></div>
+                    <div id="65" class="square black"></div>
+                    <div id="66" class="square white"></div>
+                    <div id="67" class="square black"></div>
+                    <div id="68" class="square white"></div>
+                </div>
+                <div class="row">
+                    <div id="71" class="square white"></div>
+                    <div id="72" class="square black"></div>
+                    <div id="73" class="square white"></div>
+                    <div id="74" class="square black"></div>
+                    <div id="75" class="square white"></div>
+                    <div id="76" class="square black"></div>
+                    <div id="77" class="square white"></div>
+                    <div id="78" class="square black"></div>
+                </div>
+                <div class="row">
+                    <div id="81" class="square black"></div>
+                    <div id="82" class="square white"></div>
+                    <div id="83" class="square black"></div>
+                    <div id="84" class="square white"></div>
+                    <div id="85" class="square black"></div>
+                    <div id="86" class="square white"></div>
+                    <div id="87" class="square black"></div>
+                    <div id="88" class="square white"></div>
+                </div>
+            </div>
+            <div class="prof-container">
+                <img id="bottom_avatar" src="assets/white_avatar.png" />
+                <div>
+                    <div id="bottom_username" class="username"></div>
+                    <div id="bottom_status" class="status"></div>
+                </div>
+                <div class="card timer" id="bottom_time">
+
+                </div>
             </div>
         </div>
-        <div class="board">
-            <div class="row">
-                <div id="11" class="square white"></div>
-                <div id="12" class="square black"></div>
-                <div id="13" class="square white"></div>
-                <div id="14" class="square black"></div>
-                <div id="15" class="square white"></div>
-                <div id="16" class="square black"></div>
-                <div id="17" class="square white"></div>
-                <div id="18" class="square black"></div>
-            </div>
-            <div class="row">
-                <div id="21" class="square black"></div>
-                <div id="22" class="square white"></div>
-                <div id="23" class="square black"></div>
-                <div id="24" class="square white"></div>
-                <div id="25" class="square black"></div>
-                <div id="26" class="square white"></div>
-                <div id="27" class="square black"></div>
-                <div id="28" class="square white"></div>
-            </div>
-            <div class="row">
-                <div id="31" class="square white"></div>
-                <div id="32" class="square black"></div>
-                <div id="33" class="square white"></div>
-                <div id="34" class="square black"></div>
-                <div id="35" class="square white"></div>
-                <div id="36" class="square black"></div>
-                <div id="37" class="square white"></div>
-                <div id="38" class="square black"></div>
-            </div>
-            <div class="row">
-                <div id="41" class="square black"></div>
-                <div id="42" class="square white"></div>
-                <div id="43" class="square black"></div>
-                <div id="44" class="square white"></div>
-                <div id="45" class="square black"></div>
-                <div id="46" class="square white"></div>
-                <div id="47" class="square black"></div>
-                <div id="48" class="square white"></div>
-            </div>
-            <div class="row">
-                <div id="51" class="square white"></div>
-                <div id="52" class="square black"></div>
-                <div id="53" class="square white"></div>
-                <div id="54" class="square black"></div>
-                <div id="55" class="square white"></div>
-                <div id="56" class="square black"></div>
-                <div id="57" class="square white"></div>
-                <div id="58" class="square black"></div>
-            </div>
-            <div class="row">
-                <div id="61" class="square black"></div>
-                <div id="62" class="square white"></div>
-                <div id="63" class="square black"></div>
-                <div id="64" class="square white"></div>
-                <div id="65" class="square black"></div>
-                <div id="66" class="square white"></div>
-                <div id="67" class="square black"></div>
-                <div id="68" class="square white"></div>
-            </div>
-            <div class="row">
-                <div id="71" class="square white"></div>
-                <div id="72" class="square black"></div>
-                <div id="73" class="square white"></div>
-                <div id="74" class="square black"></div>
-                <div id="75" class="square white"></div>
-                <div id="76" class="square black"></div>
-                <div id="77" class="square white"></div>
-                <div id="78" class="square black"></div>
-            </div>
-            <div class="row">
-                <div id="81" class="square black"></div>
-                <div id="82" class="square white"></div>
-                <div id="83" class="square black"></div>
-                <div id="84" class="square white"></div>
-                <div id="85" class="square black"></div>
-                <div id="86" class="square white"></div>
-                <div id="87" class="square black"></div>
-                <div id="88" class="square white"></div>
-            </div>
-        </div>
-        <div class="prof-container">
-            <img id="bottom_avatar" src="assets/white_avatar.png" />
+        <div class="actionbar">
             <div>
-                <div id="bottom_username" class="username"></div>
-                <div id="bottom_status" class="status"></div>
+                <button class="button blunder" onclick="rateMoveBlunder()">Blunder</button>
+                <button class="button normal" onclick="rateMoveNormal()">Normal</button>
+                <button class="button perfect" onclick="rateMovePerfect()">Perfect</button>
             </div>
-            <div class="card timer" id="bottom_time">
-
-            </div>
-        </div>
-
-        <div style="display: flex; justify-content: center; margin-top: 24px;">
-            <button class="button" onclick="undo()">Undo</button>
-            <button class="button" onclick="redo()">Redo</button>
-            <button class="button" onclick="flipBoard()">Flip</button>
-            <button class="button" onclick="resetBoard()">Reset</button>
-            <button class="button" onclick="startClock()">Start Clock</button>
-            <button class="button" onclick="pauseClock()">Stop Clock</button>
-        </div>
-        <div style="display: flex; justify-content: center; margin-top: 24px;">
-            <button class="button blunder" onclick="rateMoveBlunder()">Blunder</button>
-            <button class="button normal" onclick="rateMoveNormal()">Normal</button>
-            <button class="button perfect" onclick="rateMovePerfect()">Perfect</button>
-        </div>
-        <div class="jsModalTrigger" style="display: flex; justify-content: center; margin-top: 24px;">
-            <button class="button" style="width: 200px;" onclick="saveGame()">Save Game</button>
         </div>
     </div>
 
