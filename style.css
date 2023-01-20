@@ -190,6 +190,10 @@ button {
     font-size: 16px;
 }
 
+.modal .button {
+    height: 50px;
+}
+
 .button.blunder {
     background-color: #e54b7e; /* Green */
 }

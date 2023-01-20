@@ -145,19 +145,39 @@ function rateMovePerfect(){
     refreshUI()
 }
 
+function fastLoadGame(gameObject, fromStart = false){
+    startGame()
+    boardFlipped = gameObject.flipped
+
+    gameObject.moves.forEach((move) => {
+        pgnMove(currentState(), move)
+    })
+
+    if(fromStart) goToFirstState()
+    refreshUI()
+}
+
+function loadGameFromPrompt(){
+    const gameStr = prompt("Enter game: ")
+
+    try {
+        const gameObject = JSON.parse(gameStr)
+        fastLoadGame(gameObject, false)
+    }
+    catch (ex){}
+}
+
 function loadGame(filename, startFlag = true){
     readTextFile("games/" + filename, (gameStr) => {
         const gameObject = JSON.parse(gameStr)
         boardFlipped = gameObject.boardFlipped
         game = gameObject
         if(startFlag) goToFirstState()
-        refreshUI(true)
+        refreshUI()
     })
 }
 
-function saveGame(){
-    openModal();
-}
+function saveGame(){}
 
 function save(){
     const cateSelect = document.getElementById("category");
@@ -197,4 +217,30 @@ function save(){
     link.download = finalFn;
     link.click();
     URL.revokeObjectURL(link.href);
+}
+
+function exportGame(){
+    disableFilenameListeners()
+    const filenameInp = document.getElementById("filename")
+    const moves = []
+
+    for(let i=1; game.moveStack.length > i; i++){
+        const move = game.moveStack[i]
+        let pgn = move.pgn
+        if(move.lmrate === 'blunder') pgn += "?"
+        else if(move.lmrate === 'perfect') pgn += "!"
+        moves.push(pgn)
+    }
+
+    let gameOut = {
+        title: filenameInp.value,
+        flipped: boardFlipped,
+        moves: moves
+    }
+
+    window.prompt("Game", JSON.stringify(gameOut));
+
+    setTimeout(() => {
+        enableFilenameListeners()
+    }, 250)
 }

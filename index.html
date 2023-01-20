@@ -21,7 +21,6 @@
                 <button class="button" onclick="resetBoard()">Reset</button>
                 <button class="button" onclick="startClock()">Start Clock</button>
                 <button class="button" onclick="pauseClock()">Stop Clock</button>
-                <button class="button jsModalTrigger" onclick="saveGame()">Save</button>
             </div>
         </div>
         <div>
@@ -133,6 +132,11 @@
                 <button class="button blunder" onclick="rateMoveBlunder()">Blunder</button>
                 <button class="button normal" onclick="rateMoveNormal()">Normal</button>
                 <button class="button perfect" onclick="rateMovePerfect()">Perfect</button>
+                <div style="height: 12px;"></div>
+                <button class="button" >Board</button>
+                <button class="button" onclick="loadGameFromPrompt()">Load</button>
+                <button class="button jsModalTrigger"
+                        onclick="saveGame()">Save</button>
             </div>
         </div>
     </div>
@@ -142,6 +146,7 @@
     <script src="ui.js"></script>
     <script src="gameController.js"></script>
     <script src="validate.js"></script>
+    <script src="pgn.js"></script>
     <script src="play.js"></script>
 
     <div id="jsModal" class="modal">
@@ -150,7 +155,12 @@
             <div style="margin-bottom: 16px;">Export Game</div>
             <button class="modal__close jsModalClose">&#10005;</button>
 
-            <div>
+            <div class="field">
+                <label for="filename">Trap Name:</label>
+                <input name="filename" id="filename" class="modal-input" />
+            </div>
+
+            <div class="field">
                 <label for="category">Category:</label>
                 <select name="category" id="category" class="modal-input" onchange="onCategoryChange()">
                     <option value="traps">Traps</option>
@@ -177,26 +187,16 @@
                         <option value="draw">Draw</option>
                     </select>
                 </div>
-            </div>
 
-            <div id="tr_fields">
-                <div class="field">
-                    <label for="openings">Result:</label>
-                    <select name="openings" id="openings" class="modal-input">
-                        <option value="rui_lopez">Rui Lopez</option>
-                        <option value="danish_gambit">Danish Gambit</option>
-                        <option value="stafford_gambit">Stafford Gambit</option>
-                    </select>
+                <div class="centcont field">
+                    <button class="button" style="width: 140px;" onclick="save()">Save</button>
                 </div>
             </div>
 
-            <div class="field">
-                <label for="filename">Trap Name:</label>
-                <input name="filename" id="filename" class="modal-input" />
-            </div>
-
-            <div class="centcont">
-                <button class="button" style="width: 140px;" onclick="save()">Save</button>
+            <div id="tr_fields">
+                <div class="centcont field">
+                    <button class="button" style="width: 180px;" onclick="exportGame()">Copy Trap</button>
+                </div>
             </div>
         </div>
     </div>

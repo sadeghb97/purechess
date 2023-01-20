@@ -9,10 +9,6 @@ function startGame() {
     refreshUI()
 }
 
-function studyGame(filename){
-    loadGame(filename, true)
-}
-
 function stateMovePiece(nextState, startingPosition, endingPosition, turnFinishing = true){
     const attackerPiece = nextState.board[startingPosition[0]][startingPosition[1]];
 
@@ -54,6 +50,7 @@ function stateMovePiece(nextState, startingPosition, endingPosition, turnFinishi
                 }
             }
 
+            const isCapture = nextState.board[endingPosition[0]][endingPosition[1]] !== '.';
             nextState.board[startingPosition[0]][startingPosition[1]] = '.';
             nextState.board[endingPosition[0]][endingPosition[1]] = attackerPiece;
 
@@ -61,9 +58,13 @@ function stateMovePiece(nextState, startingPosition, endingPosition, turnFinishi
                 if(attackerPiece === 'p') nextState.board[endingPosition[0]][endingPosition[1]] = 'q'
                 else nextState.board[endingPosition[0]][endingPosition[1]] = 'Q'
             }
-
             stateStartAndEndPosition(nextState, startingPosition, endingPosition)
-            if(turnFinishing) finishTurn(nextState)
+
+            if(turnFinishing){
+                nextState.pgn = getPGNString(attackerPiece,
+                    startingPosition, endingPosition, isCapture)
+                finishTurn(nextState)
+            }
         }
     }
 
@@ -111,8 +112,9 @@ function redo(){
     refreshUI()
 }
 
-function castling(pieceColor, isKingSide){
-    let cloneState = null
+function castling(state, isKingSide){
+    let cloneState = JSON.parse(JSON.stringify(state))
+    const pieceColor = cloneState.curPlayer
     let sp = null
     let ep = null
 
@@ -120,13 +122,13 @@ function castling(pieceColor, isKingSide){
         if(isKingSide){
             sp = [7, 4]
             ep = [7, 7]
-            cloneState = movePiece([7, 4], [7, 6], false)
+            cloneState = stateMovePiece(cloneState, [7, 4], [7, 6], false)
             cloneState = stateMovePiece(cloneState, [7, 7], [7, 5], false)
         }
         else if(!isKingSide){
             sp = [7, 4]
             ep = [7, 0]
-            cloneState = movePiece([7, 4], [7, 2], false)
+            cloneState = stateMovePiece(cloneState, [7, 4], [7, 2], false)
             cloneState = stateMovePiece(cloneState, [7, 0], [7, 3], false)
         }
     }
@@ -134,18 +136,21 @@ function castling(pieceColor, isKingSide){
         if(isKingSide){
             sp = [0, 4]
             ep = [0, 7]
-            cloneState = movePiece([0, 4], [0, 6], false)
+            cloneState = stateMovePiece(cloneState, [0, 4], [0, 6], false)
             cloneState = stateMovePiece(cloneState, [0, 7], [0, 5], false)
         }
         else if(!isKingSide){
             sp = [0, 4]
             ep = [0, 0]
-            cloneState = movePiece([0, 4], [0, 2], false)
+            cloneState = stateMovePiece(cloneState, [0, 4], [0, 2], false)
             cloneState = stateMovePiece(cloneState, [0, 0], [0, 3], false)
         }
     }
 
     stateStartAndEndPosition(cloneState, sp, ep)
+
+    if(isKingSide) cloneState.pgn = "o-o"
+    else cloneState.pgn = "o-o-o"
     finishTurn(cloneState)
 }
 
@@ -153,16 +158,18 @@ function enPassant(startingPosition){
     const cloneState = getCurrentStateClone()
     const attackerPiece = cloneState.board[startingPosition[0]][startingPosition[1]];
 
-    cloneState.enPos = null
     cloneState.board[startingPosition[0]][startingPosition[1]] = '.';
-    cloneState.board[currentState().enPos[0]][currentState().enPos[1]] = attackerPiece;
-    if(currentState().curPlayer === 'white'){
-        cloneState.board[currentState().enPos[0] + 1][currentState().enPos[1]] = '.'
+    cloneState.board[cloneState.enPos[0]][cloneState.enPos[1]] = attackerPiece;
+    if(cloneState.curPlayer === 'white'){
+        cloneState.board[cloneState.enPos[0] + 1][cloneState.enPos[1]] = '.'
     }
     else {
-        cloneState.board[currentState().enPos[0] - 1][currentState().enPos[1]] = '.'
+        cloneState.board[cloneState.enPos[0] - 1][cloneState.enPos[1]] = '.'
     }
+    stateStartAndEndPosition(cloneState, startingPosition, cloneState.enPos)
+    nextState.pgn = getPGNString('',
+        startingPosition, cloneState.enPos, true)
 
-    stateStartAndEndPosition(cloneState, startingPosition, currentState().enPos)
+    cloneState.enPos = null
     finishTurn(cloneState)
 }

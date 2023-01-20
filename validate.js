@@ -121,12 +121,12 @@ function validateKingMovement(state, pieceColor, startingPosition, endingPositio
             if(startingPosition[0] === 7 && startingPosition[1] === 4){
                 if(endingPosition[0] === 7 && endingPosition[1] === 6 && !state.whiteKingSideCastleMoved){
                     if(positionReadyToCastle(state, 7,5) && positionReadyToCastle(state, 7,6)){
-                        if(!preventCastling) castling(pieceColor, true)
+                        if(!preventCastling) castling(state, true)
                     }
                 }
                 else if(endingPosition[0] === 7 && endingPosition[1] === 2 && !state.whiteQueenSideCastleMoved){
                     if(positionReadyToCastle(state, 7,1) && positionReadyToCastle(state, 7,2) && positionReadyToCastle(state, 7,3)) {
-                        if(!preventCastling) castling(pieceColor, false)
+                        if(!preventCastling) castling(state, false)
                     }
                 }
             }
@@ -135,12 +135,12 @@ function validateKingMovement(state, pieceColor, startingPosition, endingPositio
             if(startingPosition[0] === 0 && startingPosition[1] === 4){
                 if(endingPosition[0] === 0 && endingPosition[1] === 6 && !state.blackKingSideCastleMoved){
                     if(positionReadyToCastle(state, 0,5) && positionReadyToCastle(state, 0,6)) {
-                        if(!preventCastling) castling(pieceColor, true)
+                        if(!preventCastling) castling(state, true)
                     }
                 }
                 else if(endingPosition[0] === 0 && endingPosition[1] === 2 && !state.blackQueenSideCastleMoved){
                     if(positionReadyToCastle(state, 0,1) && positionReadyToCastle(state, 0,2) && positionReadyToCastle(state, 0,3)) {
-                        if(!preventCastling) castling(pieceColor, false)
+                        if(!preventCastling) castling(state, false)
                     }
                 }
             }
