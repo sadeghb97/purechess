@@ -93,6 +93,10 @@ function refreshUI() {
         startSquare.classList.add(lmEffect);
         endSquare.classList.add(lmEffect);
     }
+
+    const pgnLogEl = document.getElementById("pgnlog")
+    pgnLogEl.innerText = getCurrentStatePGNLog()
+
     if(!readOnly) setPieceHoldEvents();
 }
 

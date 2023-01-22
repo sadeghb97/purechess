@@ -2,7 +2,7 @@ let curHeldPiece;
 let curHeldPieceStartingPosition;
 let boardFlipped;
 let readOnly = false
-let isTraining = true
+let isTraining = false
 
 function startGame() {
     boardFlipped = false
@@ -173,7 +173,7 @@ function enPassant(startingPosition){
         cloneState.board[cloneState.enPos[0] - 1][cloneState.enPos[1]] = '.'
     }
     stateStartAndEndPosition(cloneState, startingPosition, cloneState.enPos)
-    nextState.pgn = getPGNString(currentState(), '',
+    cloneState.pgn = getPGNString(currentState(), '',
         startingPosition, cloneState.enPos, true)
 
     cloneState.enPos = null

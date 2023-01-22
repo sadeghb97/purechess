@@ -283,3 +283,23 @@ function exportGame(){
         enableFilenameListeners()
     }, 250)
 }
+
+function getCurrentStatePGNLog(){
+    let pgnLog = ""
+    for(let i=1; game.statePosition >= i; i++){
+        const move = game.moveStack[i]
+        let pgn = move.pgn
+        if(move.lmrate === 'blunder') pgn += "?"
+        else if(move.lmrate === 'perfect') pgn += "!"
+
+        if(i !== 1) pgnLog += " "
+        if(( (i-1) % 2) === 0){
+            const num = Math.floor((i / 2) + 1)
+            pgnLog += (num + ". ")
+        }
+        pgnLog += pgn
+    }
+
+    console.log("PGNLog: ", pgnLog)
+    return pgnLog
+}
