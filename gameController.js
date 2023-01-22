@@ -2,6 +2,7 @@ let curHeldPiece;
 let curHeldPieceStartingPosition;
 let boardFlipped;
 let readOnly = false
+let isTraining = true
 
 function startGame() {
     boardFlipped = false
@@ -108,6 +109,11 @@ function undo(){
 }
 
 function redo(){
+    if(isPracticing()){
+        setPieceHoldEvents()
+        return
+    }
+
     nextState()
     refreshUI()
 }

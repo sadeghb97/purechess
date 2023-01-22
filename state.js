@@ -65,6 +65,22 @@ function nextState(){
     if(game.statePosition < (game.moveStack.length - 1)) game.statePosition++
 }
 
+function isEqualBoards(firstBoard, secBoard){
+    for(let i=0; 8>i; i++){
+        for(let j=0; 8>j; j++){
+            if(firstBoard[i][j] !== secBoard[i][j]){
+                return false
+            }
+        }
+    }
+    return true
+}
+
+function isPracticing(){
+    return (game.moveStack.length - 1) > game.statePosition &&
+        game.moveStack[game.statePosition + 1].lmrate === 'perfect' && isTraining
+}
+
 function initClock(){
     clearInterval(intervalID)
     const inp = prompt("Please enter timers config: ")
@@ -177,7 +193,7 @@ function loadGamePromptPGN(){
 }
 
 function loadBoard(){
-    const boardStr = prompt("Enter game PGN: ")
+    const boardStr = prompt("Enter Board: ")
     if(!boardStr) return
     const curPlayer = confirm("White?") ? 'white' : 'black'
     const board = JSON.parse(boardStr)

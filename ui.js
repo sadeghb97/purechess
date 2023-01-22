@@ -207,8 +207,21 @@ function setPieceHoldEvents() {
                     const correctStartPosition = finalPosition(curHeldPieceStartingPosition)
                     const correctEndPosition = finalPosition(pieceReleasePosition)
 
-                    if (validateMovement(currentState(), correctStartPosition, correctEndPosition)) {
-                        movePiece(correctStartPosition, correctEndPosition);
+                    if(validateMovement(currentState(), correctStartPosition, correctEndPosition)){
+                        if(isTraining){
+                            if(isPracticing()){
+                                const cloneState = getCurrentStateClone()
+                                const checkingBoard = stateMovePiece(cloneState, correctStartPosition,
+                                    correctEndPosition, false).board
+                                const correctBoard = game.moveStack[game.statePosition + 1].board
+
+                                if(isEqualBoards(checkingBoard, correctBoard)){
+                                    nextState()
+                                    refreshUI()
+                                }
+                            }
+                        }
+                        else movePiece(correctStartPosition, correctEndPosition);
                     }
                 }
             }
