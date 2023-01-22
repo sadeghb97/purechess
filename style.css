@@ -210,9 +210,15 @@ button {
     display: flex;
     align-items: center;
     margin-top: 45px;
-    margin-left: 8px;
-    margin-right: 8px;
     height: 600px;
+}
+
+.actionbar.left {
+    margin-right: 8px;
+}
+
+.actionbar.right {
+    margin-left: 8px;
 }
 
 #pgnlog {

@@ -13,7 +13,13 @@
 </head>
 <body>
     <div id="main">
-        <div class="actionbar">
+        <div class="actionbar left">
+            <div>
+                <button class="button" onclick="staffordGambit()">Stafford</button>
+                <button class="button" onclick="danishGambit()">Danish</button>
+            </div>
+        </div>
+        <div class="actionbar left">
             <div>
                 <button class="button" onclick="undo()">Undo</button>
                 <button class="button" onclick="redo()">Redo</button>
@@ -127,7 +133,7 @@
                 </div>
             </div>
         </div>
-        <div class="actionbar">
+        <div class="actionbar right">
             <div>
                 <button class="button blunder" onclick="rateMoveBlunder()">Blunder</button>
                 <button class="button normal" onclick="rateMoveNormal()">Normal</button>
@@ -141,9 +147,7 @@
             </div>
         </div>
     </div>
-    <div id="pgnlog">
-
-    </div>
+    <div id="pgnlog"></div>
 
     <script src="lib/modal.js"></script>
     <script src="state.js"></script>
@@ -151,6 +155,7 @@
     <script src="gameController.js"></script>
     <script src="validate.js"></script>
     <script src="pgn.js"></script>
+    <script src="openings.js"></script>
     <script src="play.js"></script>
 
     <div id="jsModal" class="modal">

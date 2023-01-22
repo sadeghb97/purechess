@@ -95,7 +95,7 @@ function refreshUI() {
     }
 
     const pgnLogEl = document.getElementById("pgnlog")
-    pgnLogEl.innerText = getCurrentStatePGNLog()
+    if(pgnLogEl) pgnLogEl.innerText = getCurrentStatePGNLog()
 
     if(!readOnly) setPieceHoldEvents();
 }
