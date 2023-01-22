@@ -120,6 +120,7 @@ function redo(){
 
 function castling(state, isKingSide){
     let cloneState = JSON.parse(JSON.stringify(state))
+    cloneState.lmrate = "normal"
     const pieceColor = cloneState.curPlayer
     let sp = null
     let ep = null
