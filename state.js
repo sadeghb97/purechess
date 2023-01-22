@@ -6,7 +6,14 @@ let game = {
     moveStack: null
 }
 
-function initState(){
+function initState(board = [['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
+    ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
+    ['.', '.', '.', '.', '.', '.', '.', '.'],
+    ['.', '.', '.', '.', '.', '.', '.', '.'],
+    ['.', '.', '.', '.', '.', '.', '.', '.'],
+    ['.', '.', '.', '.', '.', '.', '.', '.'],
+    ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
+    ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r']], curPlayer = "white"){
     clearInterval(intervalID)
     game.statePosition = 0;
     game.moveStack = [];
@@ -14,15 +21,8 @@ function initState(){
     delete game.black_time
 
     const cState = {
-        board: [['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
-            ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
-            ['.', '.', '.', '.', '.', '.', '.', '.'],
-            ['.', '.', '.', '.', '.', '.', '.', '.'],
-            ['.', '.', '.', '.', '.', '.', '.', '.'],
-            ['.', '.', '.', '.', '.', '.', '.', '.'],
-            ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
-            ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r']],
-        curPlayer: "white",
+        board: board,
+        curPlayer: curPlayer,
         whiteKingSideCastleMoved: false,
         whiteQueenSideCastleMoved: false,
         whiteKinkMoved: false,
@@ -149,9 +149,7 @@ function fastLoadGame(gameObject, fromStart = false){
     startGame()
     boardFlipped = gameObject.flipped
 
-    gameObject.moves.forEach((move) => {
-        pgnMove(currentState(), move)
-    })
+    pgnMoves(gameObject.moves)
 
     if(fromStart) goToFirstState()
     refreshUI()
@@ -159,10 +157,35 @@ function fastLoadGame(gameObject, fromStart = false){
 
 function loadGameFromPrompt(){
     const gameStr = prompt("Enter game: ")
+    if(!gameStr) return
 
     try {
         const gameObject = JSON.parse(gameStr)
         fastLoadGame(gameObject, false)
+    }
+    catch (ex){}
+}
+
+function loadGamePromptPGN(){
+    const gameStr = prompt("Enter game PGN: ")
+    if(!gameStr) return
+
+    try {
+        loadPGN(gameStr, false)
+    }
+    catch (ex){}
+}
+
+function loadBoard(){
+    const boardStr = prompt("Enter game PGN: ")
+    if(!boardStr) return
+    const curPlayer = confirm("White?") ? 'white' : 'black'
+    const board = JSON.parse(boardStr)
+
+    try {
+        boardFlipped = false
+        initState(board, curPlayer)
+        refreshUI()
     }
     catch (ex){}
 }

@@ -61,7 +61,7 @@ function stateMovePiece(nextState, startingPosition, endingPosition, turnFinishi
             stateStartAndEndPosition(nextState, startingPosition, endingPosition)
 
             if(turnFinishing){
-                nextState.pgn = getPGNString(attackerPiece,
+                nextState.pgn = getPGNString(currentState(), attackerPiece,
                     startingPosition, endingPosition, isCapture)
                 finishTurn(nextState)
             }
@@ -167,7 +167,7 @@ function enPassant(startingPosition){
         cloneState.board[cloneState.enPos[0] - 1][cloneState.enPos[1]] = '.'
     }
     stateStartAndEndPosition(cloneState, startingPosition, cloneState.enPos)
-    nextState.pgn = getPGNString('',
+    nextState.pgn = getPGNString(currentState(), '',
         startingPosition, cloneState.enPos, true)
 
     cloneState.enPos = null

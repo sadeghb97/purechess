@@ -16,7 +16,7 @@ function pgnMove(state, pgnMove){
         }
     }
 
-    if(pgnMove.endsWith("+")) pgnMove.substring(0, pgnMove.length - 1)
+    if(pgnMove.endsWith("+")) pgnMove = pgnMove.substring(0, pgnMove.length - 1)
 
     if(pgnMove.toLowerCase() === 'o-o' || pgnMove.toLowerCase() === 'o-o-o'){
         const cloneState = JSON.parse(JSON.stringify(state))
@@ -67,9 +67,18 @@ function pgnMove(state, pgnMove){
     else stateMovePiece(cloneState, sp, ep, true)
 }
 
-function getPGNString(attPiece, sp, ep, isCapture, mRate = "normal"){
+function pgnMoves(moves){
+    moves.forEach((move) => {
+        pgnMove(currentState(), move)
+    })
+}
+
+function getPGNString(state, attPiece, sp, ep, isCapture, mRate = "normal"){
     let pgn = (attPiece.toLowerCase() === 'p' ? "" : attPiece.toUpperCase())
-    pgn += getPGNPosition(sp)
+    if(attPiece.toLowerCase() === 'p') pgn +=
+        getSummaryPawnPGNPosition(state, sp, ep, attPiece, isCapture)
+    else pgn += getSummaryPGNPosition(state ,sp, ep, attPiece)
+
     if(isCapture) pgn += "x"
     pgn += getPGNPosition(ep)
     return pgn
@@ -85,6 +94,40 @@ function getPGNPosition(pos){
     else if(pos[1] == 5) return "f" + row
     else if(pos[1] == 6) return "g" + row
     else return "h" + row
+}
+
+function getSummaryPawnPGNPosition(state, sp, ep, pawnPiece, isCapture){
+    if(!isCapture) return ""
+    const possibleSP = ep[1] > sp[1] ? [sp[0], sp[1] + 2] : [sp[0], sp[1] - 2]
+    if(sp[1] < 0 || sp[1] > 7) return ""
+    if(state.board[possibleSP[0]][possibleSP[1]] !== pawnPiece) return ""
+    return  getPGNPosition(sp)[0]
+}
+
+function getSummaryPGNPosition(state, sp, ep, piece){
+    const attPiece = state.curPlayer === 'white' ? piece.toLowerCase() : piece.toUpperCase()
+    const positions = getAllPossibleAttackers(state, attPiece, ep)
+    if(positions.length === 1) return ""
+
+    let isOK = true
+    positions.forEach((pos) => {
+        if(sp[0] === pos[0] && sp[1] === pos[1]) return
+        if(sp[0] === pos[0]){
+            isOK = false;
+        }
+    })
+    if(isOK) return sp[0]
+
+    isOK = true
+    positions.forEach((pos) => {
+        if(sp[0] === pos[0] && sp[1] === pos[1]) return
+        if(sp[1] === pos[1]){
+            isOK = false;
+        }
+    })
+    if(isOK) return getPGNPosition(sp)[0]
+
+    return getPGNPosition(sp)
 }
 
 function getPositionRow(pc){
@@ -112,13 +155,31 @@ function getPositionArray(pStr){
     return out
 }
 
+function findPiecePositionFromChar(state, ch, piece){
+    if(isNaN(ch)){
+        const col = getPositionColumn(ch)
+        for(let i=0; 8>i; i++){
+            if(state.board[i][col] === piece) return [i, col]
+        }
+    }
+    else {
+        const row = getPositionRow(pc)
+        for(let i=0; 8>i; i++) {
+            if (state.board[row][i] === piece) return [row, i]
+        }
+    }
+
+    return null
+}
+
 function findAttackerPiecePosition(state, piece, ep, spStr, isCapture){
     if(piece === "") return findPawnStartPosition(state, ep, spStr, isCapture)
-    else if(piece === "r") return findRookStartPosition(state, ep, spStr)
-    else if(piece === "n") return findKnightStartPosition(state, ep, spStr)
-    else if(piece === "b") return findBishopStartPosition(state, ep, spStr)
-    else if(piece === "q") return findQueenStartPosition(state, ep, spStr)
-    else return findKingStartPosition(state, ep, spStr)
+    const attPiece = state.curPlayer === 'white' ? piece.toLowerCase() : piece.toUpperCase()
+
+    const positions = getAllPossibleAttackers(state, attPiece, ep)
+    if(positions.length === 1) return positions[0]
+    if(spStr.length > 1) return getPositionArray(spStr)
+    return findPiecePositionFromChar(state, spStr, attPiece)
 }
 
 function findPawnStartPosition(state, ep, spStr, isCapture){
@@ -140,61 +201,7 @@ function findPawnStartPosition(state, ep, spStr, isCapture){
     if(state.board[row - dir][ep[1]] === piece) return [row - dir, ep[1]]
 }
 
-function findRookStartPosition(state, ep, spStr){
-    const piece = state.curPlayer === 'white' ? "r" : "R"
-    let row = 0;
-    let col = 0;
-
-    if(spStr.length > 0){
-        const pc = spStr
-        if(isNaN(pc)){
-            col = getPositionColumn(pc)
-            for(let i=0; 8>i; i++){
-                if(state.board[i][col] === piece) return [i, col]
-            }
-        }
-        else {
-            row = getPositionRow(pc)
-            for(let i=0; 8>i; i++) {
-                if (state.board[row][i] === piece) return [row, i]
-            }
-        }
-    }
-
-    for(let i=0; 8>i; i++){
-        if(state.board[ep[0]][i] === piece) return [ep[0], i]
-    }
-
-    for(let i=0; 8>i; i++){
-        if(state.board[i][ep[1]] === piece) return [i, ep[1]]
-    }
-}
-
-function findKnightStartPosition(state, ep, spStr){
-    const piece = state.curPlayer === 'white' ? "n" : "N"
-    const positions = getAllPieces(state, piece, ep)
-    if(positions.length === 1) return positions[0]
-}
-
-function findBishopStartPosition(state, ep, spStr){
-    const piece = state.curPlayer === 'white' ? "b" : "B"
-    const positions = getAllPieces(state, piece, ep)
-    if(positions.length === 1) return positions[0]
-}
-
-function findQueenStartPosition(state, ep, spStr){
-    const piece = state.curPlayer === 'white' ? "q" : "Q"
-    const positions = getAllPieces(state, piece, ep)
-    if(positions.length === 1) return positions[0]
-}
-
-function findKingStartPosition(state, ep, spStr){
-    const piece = state.curPlayer === 'white' ? "k" : "K"
-    const positions = getAllPieces(state, piece, ep, true)
-    if(positions.length === 1) return positions[0]
-}
-
-function getAllPieces(state, piece, ep, validate = true){
+function getAllPossibleAttackers(state, piece, ep, validate = true){
     const positions = []
     for(let i=0; 8>i; i++){
         for(let j=0; 8>j; j++){
@@ -212,4 +219,21 @@ function getAllPieces(state, piece, ep, validate = true){
     }
 
     return positions
+}
+
+function loadPGN(pgnStr){
+    let pgnMovesStr = pgnStr.replaceAll("\n", " ")
+    pgnMovesStr = pgnMovesStr.replaceAll("  ", " ")
+    pgnMovesStr = pgnMovesStr.substring(pgnMovesStr.lastIndexOf("]") + 1).trim()
+    const moves = []
+    const pieces = pgnMovesStr.split(" ")
+
+    pieces.forEach((p) => {
+        if(p.includes(".") || p.includes("*")) return
+        moves.push(p)
+    })
+
+    resetBoard()
+    pgnMoves(moves)
+    refreshUI()
 }
