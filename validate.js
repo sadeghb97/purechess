@@ -91,15 +91,18 @@ function validateRookMovement(state, startingPosition, endingPosition) {
     }
 }
 
-function positionReadyToCastle(state, x, y){
-    if(state.board[x][y] !== '.') return false
+function positionReadyToCastle(state, x, y, tp = '.'){
+    if(state.board[x][y] !== tp) return false
 
     for(let i=0; 8>i; i++){
         for(let j=0; 8>j; j++){
             const piece = state.board[i][j];
             if(piece === '.') continue;
             if(isFriendlyPieceOnPosition(state, [i, j])) continue;
-            if(validateMovement(state, [i, j], [x, y])) return false;
+
+            const cloneState = getCurrentStateClone()
+            toggleTurn(cloneState)
+            if(validateMovement(cloneState, [i, j], [x, y])) return false;
         }
     }
 
@@ -116,37 +119,44 @@ function validateKingMovement(state, pieceColor, startingPosition, endingPositio
         // validate if move puts own king in check
         // validate castling
         return true;
-    } else {
-        if(pieceColor === 'white' && state.curPlayer === 'white' && !state.whiteKinkMoved){
-            if(startingPosition[0] === 7 && startingPosition[1] === 4){
-                if(endingPosition[0] === 7 && endingPosition[1] === 6 && !state.whiteKingSideCastleMoved){
-                    if(positionReadyToCastle(state, 7,5) && positionReadyToCastle(state, 7,6)){
-                        if(!preventCastling) castling(state, true)
-                    }
-                }
-                else if(endingPosition[0] === 7 && endingPosition[1] === 2 && !state.whiteQueenSideCastleMoved){
-                    if(positionReadyToCastle(state, 7,1) && positionReadyToCastle(state, 7,2) && positionReadyToCastle(state, 7,3)) {
-                        if(!preventCastling) castling(state, false)
-                    }
-                }
-            }
-        }
-        else if(pieceColor === 'black' && state.curPlayer === 'black' && !state.blackKinkMoved) {
-            if(startingPosition[0] === 0 && startingPosition[1] === 4){
-                if(endingPosition[0] === 0 && endingPosition[1] === 6 && !state.blackKingSideCastleMoved){
-                    if(positionReadyToCastle(state, 0,5) && positionReadyToCastle(state, 0,6)) {
-                        if(!preventCastling) castling(state, true)
-                    }
-                }
-                else if(endingPosition[0] === 0 && endingPosition[1] === 2 && !state.blackQueenSideCastleMoved){
-                    if(positionReadyToCastle(state, 0,1) && positionReadyToCastle(state, 0,2) && positionReadyToCastle(state, 0,3)) {
-                        if(!preventCastling) castling(state, false)
-                    }
-                }
-            }
-        }
-        return false;
     }
+    if(preventCastling) return false
+
+    if(pieceColor === 'white' && state.curPlayer === 'white' && !state.whiteKinkMoved){
+        if(startingPosition[0] === 7 && startingPosition[1] === 4){
+            if(endingPosition[0] === 7 && endingPosition[1] === 6 && !state.whiteKingSideCastleMoved){
+                const rtc = positionReadyToCastle(state, 7,4, 'k') && positionReadyToCastle(state, 7,5) &&
+                    positionReadyToCastle(state, 7,6) && positionReadyToCastle(state, 7,7, 'r')
+
+                if(rtc) castling(state, true)
+            }
+            else if(endingPosition[0] === 7 && endingPosition[1] === 2 && !state.whiteQueenSideCastleMoved){
+                const rtc = positionReadyToCastle(state, 7,0, 'r') && positionReadyToCastle(state, 7,1) &&
+                    positionReadyToCastle(state, 7,2) && positionReadyToCastle(state, 7,3) &&
+                    positionReadyToCastle(state, 7,4, 'k')
+
+                if(rtc) castling(state, false)
+            }
+        }
+    }
+    else if(pieceColor === 'black' && state.curPlayer === 'black' && !state.blackKinkMoved) {
+        if(startingPosition[0] === 0 && startingPosition[1] === 4){
+            if(endingPosition[0] === 0 && endingPosition[1] === 6 && !state.blackKingSideCastleMoved){
+                const rtc = positionReadyToCastle(state, 0,4, 'K') && positionReadyToCastle(state, 0,5) &&
+                    positionReadyToCastle(state, 0,6) && positionReadyToCastle(state, 0,7, 'R')
+
+                if(rtc) castling(state, true)
+            }
+            else if(endingPosition[0] === 0 && endingPosition[1] === 2 && !state.blackQueenSideCastleMoved){
+                const rtc = positionReadyToCastle(state, 0,0, 'R') && positionReadyToCastle(state, 0,1) &&
+                    positionReadyToCastle(state, 0,2) && positionReadyToCastle(state, 0,3) &&
+                    positionReadyToCastle(state, 0,4, 'K')
+
+                if(rtc) castling(state, false)
+            }
+        }
+    }
+    return false;
 }
 
 function validateQueenMovement(state, startingPosition, endingPosition) {
