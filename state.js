@@ -21,6 +21,7 @@ function initState(board = [['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
     delete game.black_time
 
     const cState = {
+        id: Date.now(),
         board: board,
         curPlayer: curPlayer,
         whiteKingSideCastleMoved: false,
@@ -31,7 +32,8 @@ function initState(board = [['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
         blackKinkMoved: false,
         startPosition: null,
         endPosition: null,
-        epPos: null
+        epPos: null,
+        eval: null
     }
 
     game.moveStack[0] = cState
@@ -51,6 +53,9 @@ function pushState(state){
     game.statePosition++
     game.moveStack[game.statePosition] = state
     game.moveStack.length = game.statePosition + 1
+
+    state.eval = null
+    state.id = Date.now();
 }
 
 function goToFirstState(){
@@ -168,12 +173,10 @@ function fastLoadGame(gameObject, fromStart = false){
     pgnMoves(gameObject.moves)
 
     if(fromStart) goToFirstState()
-    loading_game = false
     refreshUI()
 }
 
 function loadGameFromPrompt(){
-    loading_game = true
     const gameStr = prompt("Enter game: ")
     if(!gameStr) return
 
@@ -182,11 +185,9 @@ function loadGameFromPrompt(){
         fastLoadGame(gameObject, false)
     }
     catch (ex){}
-    loading_game = false
 }
 
 function loadGamePromptPGN(){
-    loading_game = true
     const gameStr = prompt("Enter game PGN: ")
     if(!gameStr) return
 
@@ -194,11 +195,9 @@ function loadGamePromptPGN(){
         loadPGN(gameStr, false)
     }
     catch (ex){}
-    loading_game = false
 }
 
 function loadBoard(){
-    loading_game = true
     const boardStr = prompt("Enter Board: ")
     if(!boardStr) return
     const curPlayer = confirm("White?") ? 'white' : 'black'
@@ -207,24 +206,19 @@ function loadBoard(){
     try {
         boardFlipped = false
         initState(board, curPlayer)
-        loading_game = false
         refreshUI()
     }
     catch (ex){}
-    loading_game = false
 }
 
 function loadGame(filename, startFlag = true){
-    loading_game = true
     readTextFile("games/" + filename, (gameStr) => {
         const gameObject = JSON.parse(gameStr)
         boardFlipped = gameObject.boardFlipped
         game = gameObject
         if(startFlag) goToFirstState()
-        loading_game = false
         refreshUI()
     })
-    loading_game = false
 }
 
 function saveGame(){}
@@ -295,9 +289,9 @@ function exportGame(){
     }, 250)
 }
 
-function getCurrentStatePGNLog(){
+function getCurrentStatePGNLog(statePosition){
     let pgnLog = ""
-    for(let i=1; game.statePosition >= i; i++){
+    for(let i=1; statePosition >= i; i++){
         const move = game.moveStack[i]
         let pgn = move.pgn
         if(move.lmrate === 'blunder') pgn += "?"
@@ -314,9 +308,9 @@ function getCurrentStatePGNLog(){
     return pgnLog
 }
 
-function getCurrentStateEnginePositionLog(){
+function getCurrentStateEnginePositionLog(statePosition){
     let engineLog = ""
-    for(let i=1; game.statePosition >= i; i++){
+    for(let i=1; statePosition >= i; i++){
         const move = game.moveStack[i]
         const spStr = getPGNPosition(move.startPosition)
         const epStr = getPGNPosition(move.endPosition)

@@ -4,7 +4,6 @@ let boardFlipped;
 let readOnly = false
 let isTraining = false
 const USE_ENGINE = true
-let loading_game = false
 
 function startGame() {
     boardFlipped = false
@@ -118,6 +117,14 @@ function redo(){
 
     nextState()
     refreshUI()
+}
+
+function doBestMove(){
+    if(currentState().eval !== null && currentState().eval.bm_from !== null){
+        const sp = getPositionArray(currentState().eval.bm_from)
+        const ep = getPositionArray(currentState().eval.bm_target)
+        movePiece(sp, ep);
+    }
 }
 
 function castling(state, isKingSide){

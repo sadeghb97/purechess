@@ -202,6 +202,10 @@ button {
     background-color: #027074; /* Green */
 }
 
+.button.perfect-disabled {
+    background-color: #02707466; /* Green */
+}
+
 .button.normal {
     background-color: #8e9206; /* Green */
 }
@@ -229,6 +233,7 @@ button {
 }
 
 .w3-strip-white {
+    display: none;
     border-radius: 5px;
     color:#000!important;background-color: #ffffff !important
 }

@@ -235,6 +235,5 @@ function loadPGN(pgnStr){
 
     resetBoard()
     pgnMoves(moves)
-    loading_game = false
     refreshUI()
 }

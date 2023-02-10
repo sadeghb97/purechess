@@ -4,6 +4,7 @@ function flipBoard(){
 }
 
 function refreshUI() {
+    const currentStatePosition = game.statePosition
     let curBoard = JSON.parse(JSON.stringify(currentState().board))
     let blackValue = 0
     let whiteValue = 0
@@ -40,6 +41,17 @@ function refreshUI() {
     const bottomUsernameEl = document.getElementById("bottom_username")
     const topStatusEl = document.getElementById("top_status")
     const bottomStatusEl = document.getElementById("bottom_status")
+    const perfMoveButton = document.getElementById("do_best_move")
+    const evalBarEl = document.getElementById("eval_bar")
+
+    if(USE_ENGINE){
+        perfMoveButton.style.display = 'inline'
+        evalBarEl.style.display = 'inline'
+    }
+    else{
+        perfMoveButton.style.display = 'none'
+        evalBarEl.style.display = 'none'
+    }
 
     if(topAvatarEl != null){
         topAvatarEl.src = topAvatar
@@ -96,72 +108,109 @@ function refreshUI() {
 
     const pgnLogEl = document.getElementById("pgnlog")
     const epLogEl = document.getElementById("eplog")
-    if(pgnLogEl) pgnLogEl.innerText = getCurrentStatePGNLog()
-    if(epLogEl) epLogEl.innerText = getCurrentStateEnginePositionLog()
+    if(pgnLogEl) pgnLogEl.innerText = getCurrentStatePGNLog(currentStatePosition)
+    if(epLogEl) epLogEl.innerText = getCurrentStateEnginePositionLog(currentStatePosition)
 
     if(!readOnly) setPieceHoldEvents();
-    if(USE_ENGINE && !loading_game) engineEval()
+    if(USE_ENGINE){
+        if(currentState().eval !== null){
+            updateBoardWithEngineResults(currentState().id)
+        }
+        else engineEval(currentState(), currentStatePosition)
+    }
 }
 
-function engineEval(){
+function engineEval(state, stateIndex){
+    const perfMoveButton = document.getElementById("do_best_move")
+    if(state.eval !== null){
+        updateBoardWithEngineResults(state.id)
+        return
+    }
     const engine = new Worker('lib/lozza.js');
-    const bsElement = document.getElementById("black_strip_status")
+    perfMoveButton.classList.remove("perfect")
+    perfMoveButton.classList.add('perfect-disabled');
 
     engine.onmessage = (e) => {
         const data = e.data
+
         if(data.includes("bestmove")){
+            if(state.eval === null) state.eval = {}
             const moveStr = data.substring(9).trim()
-            const from = moveStr.substring(0, 2)
-            const target = moveStr.substring(2)
-            console.log('"' + from + '" . "' + target + '"')
+            state.eval.bm_from = moveStr.substring(0, 2)
+            state.eval.bm_target = moveStr.substring(2)
+            updateBoardWithEngineResults(state.id)
         }
         if(data.includes('score')){
+            if(state.eval === null) state.eval = {}
             const sm = "score mate"
             const scp = "score cp"
 
             if(data.includes(sm)){
                 const start = data.indexOf(sm) + sm.length + 1
                 const end = data.indexOf(" ", start)
-                const mateNumber = data.substring(start, end)
-                console.log("Mate", mateNumber)
-
-                const isWhiteTurn = currentState().curPlayer === 'white'
-                if((isWhiteTurn && mateNumber >= 0) || (!isWhiteTurn && mateNumber < 0)){
-                    bsElement.style.height = '0'
-                }
-                else {
-                    bsElement.style.height = '100%'
-                }
+                state.eval.forceMate = true
+                state.eval.mateNumber = data.substring(start, end)
+                updateBoardWithEngineResults(state.id)
             }
             else if(data.includes(scp)){
+                state.eval.forceMate = false
                 const start = data.indexOf(scp) + scp.length + 1
                 const end = data.indexOf(" ", start)
-                const scoreCP = data.substring(start, end)
-                console.log("ScoreCP", scoreCP)
-                if(scoreCP === 0){
-                    bsElement.style.height = '50%'
-                    return
-                }
-
-                let pureSCP = scoreCP
-                if(currentState().curPlayer === 'black'){
-                    pureSCP = scoreCP * -1
-                }
-
-                let ev = evalBarSize(Math.abs(pureSCP))
-                if(ev >= 50) ev = 49.99
-
-                let shPercent = pureSCP < 0 ? 50 + ev : 50 - ev
-                console.log(scoreCP, pureSCP, ev, shPercent)
-                bsElement.style.height = shPercent + '%'
+                state.eval.score = data.substring(start, end)
+                updateBoardWithEngineResults(state.id)
             }
         }
     }
 
     engine.postMessage('ucinewgame')
-    engine.postMessage('position startpos moves ' + getCurrentStateEnginePositionLog())
+    engine.postMessage('position startpos moves ' + getCurrentStateEnginePositionLog(stateIndex))
     engine.postMessage('eval')
-    engine.postMessage('go depth ' + 1);
+    engine.postMessage('go depth ' + 10);
+}
+
+function updateBoardWithEngineResults(stateId){
+    const bsElement = document.getElementById("black_strip_status")
+    const state = currentState()
+    if(state.id !== stateId || state.eval === null) return
+
+    const perfMoveButton = document.getElementById("do_best_move")
+
+    if(state.eval.forceMate){
+        const isWhiteTurn = state.curPlayer === 'white'
+        if((isWhiteTurn && state.eval.mateNumber >= 0) || (!isWhiteTurn && state.eval.mateNumber < 0)){
+            bsElement.style.height = '0'
+        }
+        else {
+            bsElement.style.height = '100%'
+        }
+    }
+    else {
+        const score = state.eval.score
+        if(score == 0){
+            bsElement.style.height = '50%'
+            return
+        }
+
+        let pureSCP = score
+        if(state.curPlayer === 'black'){
+            pureSCP = score * -1
+        }
+
+        let ev = evalBarSize(Math.abs(pureSCP))
+        if(ev >= 50) ev = 49.99
+
+        let shPercent = pureSCP < 0 ? 50 + ev : 50 - ev
+        bsElement.style.height = shPercent + '%'
+    }
+
+    if(state.eval.bm_from != null){
+        perfMoveButton.classList.remove("perfect-disabled")
+        perfMoveButton.classList.add('perfect');
+    }
+    else {
+        perfMoveButton.classList.remove("perfect")
+        perfMoveButton.classList.add('perfect-disabled');
+    }
 }
 
 function evalBarSize(x){
