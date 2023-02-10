@@ -116,7 +116,7 @@ function getSummaryPGNPosition(state, sp, ep, piece){
             isOK = false;
         }
     })
-    if(isOK) return sp[0]
+    if(isOK) return getPGNPosition(sp)[1]
 
     isOK = true
     positions.forEach((pos) => {
@@ -163,7 +163,7 @@ function findPiecePositionFromChar(state, ch, piece){
         }
     }
     else {
-        const row = getPositionRow(pc)
+        const row = getPositionRow(ch)
         for(let i=0; 8>i; i++) {
             if (state.board[row][i] === piece) return [row, i]
         }
