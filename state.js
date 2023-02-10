@@ -300,6 +300,18 @@ function getCurrentStatePGNLog(){
         pgnLog += pgn
     }
 
-    console.log("PGNLog: ", pgnLog)
     return pgnLog
+}
+
+function getCurrentStateEnginePositionLog(){
+    let engineLog = ""
+    for(let i=1; game.statePosition >= i; i++){
+        const move = game.moveStack[i]
+        const spStr = getPGNPosition(move.startPosition)
+        const epStr = getPGNPosition(move.endPosition)
+        if(engineLog.length !== 0) engineLog += " "
+        engineLog += (spStr + epStr)
+    }
+
+    return engineLog
 }

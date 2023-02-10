@@ -128,13 +128,13 @@ function castling(state, isKingSide){
     if(pieceColor === 'white'){
         if(isKingSide){
             sp = [7, 4]
-            ep = [7, 7]
+            ep = [7, 6]
             cloneState = stateMovePiece(cloneState, [7, 4], [7, 6], false)
             cloneState = stateMovePiece(cloneState, [7, 7], [7, 5], false)
         }
         else if(!isKingSide){
             sp = [7, 4]
-            ep = [7, 0]
+            ep = [7, 2]
             cloneState = stateMovePiece(cloneState, [7, 4], [7, 2], false)
             cloneState = stateMovePiece(cloneState, [7, 0], [7, 3], false)
         }
@@ -142,13 +142,13 @@ function castling(state, isKingSide){
     else {
         if(isKingSide){
             sp = [0, 4]
-            ep = [0, 7]
+            ep = [0, 6]
             cloneState = stateMovePiece(cloneState, [0, 4], [0, 6], false)
             cloneState = stateMovePiece(cloneState, [0, 7], [0, 5], false)
         }
         else if(!isKingSide){
             sp = [0, 4]
-            ep = [0, 0]
+            ep = [0, 2]
             cloneState = stateMovePiece(cloneState, [0, 4], [0, 2], false)
             cloneState = stateMovePiece(cloneState, [0, 0], [0, 3], false)
         }
