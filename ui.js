@@ -270,6 +270,12 @@ function loadPiece(piece, position) {
     squareElement.appendChild(pieceElement);
 }
 
+function selectAndCopyContent(containerId){
+    const container = document.getElementById(containerId)
+    window.getSelection().selectAllChildren(container);
+    document.execCommand("copy")
+}
+
 function setPieceHoldEvents() {
     let mouseX, mouseY = 0;
 
