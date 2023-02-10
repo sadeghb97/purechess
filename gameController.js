@@ -75,7 +75,25 @@ function stateMovePiece(nextState, startingPosition, endingPosition, turnFinishi
 
 function movePiece(startingPosition, endingPosition, fullTurn = true) {
     const nextState = getCurrentStateClone()
-    return stateMovePiece(nextState, startingPosition, endingPosition, fullTurn)
+    const piece = nextState.board[startingPosition[0]][startingPosition[1]]
+    let isOk = true
+
+    if(piece.toLowerCase() === 'k'){
+        const val = validateKingMovement(
+            nextState,
+            piece.toLowerCase() === piece ? 'white' : 'black',
+            startingPosition, endingPosition)
+
+        if(!val) isOk = false
+    }
+    else if(piece.toLowerCase() === 'p'){
+        const val = validatePawnMovement(
+            nextState,
+            piece.toLowerCase() === piece ? 'white' : 'black',
+            startingPosition, endingPosition)
+        if(!val) isOk = false
+    }
+    if(isOk) return stateMovePiece(nextState, startingPosition, endingPosition, fullTurn)
 }
 
 function finishTurn(nextState){
