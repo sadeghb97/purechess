@@ -3,6 +3,8 @@ let curHeldPieceStartingPosition;
 let boardFlipped;
 let readOnly = false
 let isTraining = false
+const USE_ENGINE = true
+let loading_game = false
 
 function startGame() {
     boardFlipped = false

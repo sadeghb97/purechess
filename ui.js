@@ -100,6 +100,75 @@ function refreshUI() {
     if(epLogEl) epLogEl.innerText = getCurrentStateEnginePositionLog()
 
     if(!readOnly) setPieceHoldEvents();
+    if(USE_ENGINE && !loading_game) engineEval()
+}
+
+function engineEval(){
+    const engine = new Worker('lib/lozza.js');
+    const bsElement = document.getElementById("black_strip_status")
+
+    engine.onmessage = (e) => {
+        const data = e.data
+        if(data.includes("bestmove")){
+            const moveStr = data.substring(9).trim()
+            const from = moveStr.substring(0, 2)
+            const target = moveStr.substring(2)
+            console.log('"' + from + '" . "' + target + '"')
+        }
+        if(data.includes('score')){
+            const sm = "score mate"
+            const scp = "score cp"
+
+            if(data.includes(sm)){
+                const start = data.indexOf(sm) + sm.length + 1
+                const end = data.indexOf(" ", start)
+                const mateNumber = data.substring(start, end)
+                console.log("Mate", mateNumber)
+
+                const isWhiteTurn = currentState().curPlayer === 'white'
+                if((isWhiteTurn && mateNumber >= 0) || (!isWhiteTurn && mateNumber < 0)){
+                    bsElement.style.height = '0'
+                }
+                else {
+                    bsElement.style.height = '100%'
+                }
+            }
+            else if(data.includes(scp)){
+                const start = data.indexOf(scp) + scp.length + 1
+                const end = data.indexOf(" ", start)
+                const scoreCP = data.substring(start, end)
+                console.log("ScoreCP", scoreCP)
+                if(scoreCP === 0){
+                    bsElement.style.height = '50%'
+                    return
+                }
+
+                let pureSCP = scoreCP
+                if(currentState().curPlayer === 'black'){
+                    pureSCP = scoreCP * -1
+                }
+
+                let ev = evalBarSize(Math.abs(pureSCP))
+                if(ev >= 50) ev = 49.99
+
+                let shPercent = pureSCP < 0 ? 50 + ev : 50 - ev
+                console.log(scoreCP, pureSCP, ev, shPercent)
+                bsElement.style.height = shPercent + '%'
+            }
+        }
+    }
+
+    engine.postMessage('ucinewgame')
+    engine.postMessage('position startpos moves ' + getCurrentStateEnginePositionLog())
+    engine.postMessage('eval')
+    engine.postMessage('go depth ' + 1);
+}
+
+function evalBarSize(x){
+    if (x <= 450) {
+        return x / 10;
+    }
+    return 45 + x / 6400
 }
 
 function refreshTimers(){
