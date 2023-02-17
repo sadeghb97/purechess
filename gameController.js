@@ -4,11 +4,15 @@ let boardFlipped;
 let readOnly = false
 let isTraining = false
 const USE_ENGINE = true
+let isLoading = false
 
-function startGame() {
+function resetBoard() {
     boardFlipped = false
     initState()
     refreshUI()
+
+    const gameTitleEl = document.getElementById("game_title")
+    gameTitleEl.style.display = "none"
 }
 
 function stateMovePiece(nextState, startingPosition, endingPosition, turnFinishing = true){
@@ -118,10 +122,6 @@ function getPieceValue(piece){
 function loadFirstState(){
     goToFirstState()
     refreshUI()
-}
-
-function resetBoard(){
-    startGame()
 }
 
 function undo(){

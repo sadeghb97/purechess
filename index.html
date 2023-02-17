@@ -12,6 +12,8 @@
     <title>Web Chess</title>
 </head>
 <body>
+    <div class="centcont" id="game_title"></div>
+
     <div id="main">
         <div class="actionbar left">
             <div>
@@ -159,18 +161,26 @@
             </div>
         </div>
     </div>
+
     <div id="pgnlog" class="log" onclick="selectAndCopyContent('pgnlog')"></div>
     <div id="eplog" class="log" onclick="selectAndCopyContent('eplog')"></div>
+
+    <div class="centcont" id="games_library" style="margin-top: 64px; margin-bottom: 32px;">
+
+    </div>
 
     <script src="lib/modal.js"></script>
     <script src="lib/openings.js"></script>
     <script src="lib/chess.js"></script>
     <script src="state.js"></script>
+    <script src="utils.js"></script>
     <script src="ui.js"></script>
     <script src="gameController.js"></script>
     <script src="validate.js"></script>
     <script src="pgn.js"></script>
     <script src="myopenings.js"></script>
+    <script src="traps.js"></script>
+    <script src="repository.js"></script>
     <script src="play.js"></script>
 
     <div id="jsModal" class="modal">

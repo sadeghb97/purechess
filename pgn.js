@@ -262,6 +262,10 @@ function getPartPgn(pgnStr, start){
 function loadPGN(pgnStr){
     const moves = getPGNMoves(pgnStr)
     resetBoard()
+
+    isLoading = true
     pgnMoves(moves)
+    isLoading = false
+
     refreshUI()
 }

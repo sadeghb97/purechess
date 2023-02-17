@@ -33,8 +33,6 @@ function loadRepository(){
 
         libraryDiv.appendChild(trapsContainerDiv)
     }
-
-    loadRandomTrap()
 }
 
 function loadTrap(opIndex, trpIndex){
@@ -43,14 +41,15 @@ function loadTrap(opIndex, trpIndex){
     const gameTitleDiv = document.getElementById("game_title")
     gameTitleDiv.style.marginBottom = "12px"
 
+    fastLoadGame(trap, true)
+
     if(gameTitleDiv != null) {
         gameTitleDiv.innerHTML = ''
         const gtSpan = document.createElement("span")
         gtSpan.append(op.opening_name + ": " + trap.title)
         gameTitleDiv.appendChild(gtSpan)
+        gameTitleDiv.style.display = 'block'
     }
-
-    fastLoadGame(trap, true)
 }
 
 function loadRandomTrap(){

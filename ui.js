@@ -112,17 +112,18 @@ function refreshUI() {
     if(epLogEl) epLogEl.innerText = getCurrentStateEnginePositionLog(currentStatePosition)
 
     if(!readOnly) setPieceHoldEvents();
-    if(USE_ENGINE){
+    if(USE_ENGINE && !isLoading){
         if(currentState().eval !== null){
             updateBoardWithEngineResults(currentState().id)
         }
         else engineEval(currentState(), currentStatePosition)
     }
 
-    if(currentState().opening !== null){
-        updateBoardWithOpeningBrowseResults(currentState().id, currentStatePosition)
+    if(!isLoading) {
+        if (currentState().opening !== null) {
+            updateBoardWithOpeningBrowseResults(currentState().id, currentStatePosition)
+        } else stateBrowseOpenings(currentState(), currentStatePosition)
     }
-    else stateBrowseOpenings(currentState(), currentStatePosition)
 }
 
 function stateBrowseOpenings(state, stateIndex){

@@ -183,10 +183,12 @@ function getLastKnownOpening(maxIndex){
 }
 
 function fastLoadGame(gameObject, fromStart = false){
-    startGame()
+    resetBoard()
     boardFlipped = gameObject.flipped
 
+    isLoading = true
     pgnMoves(gameObject.moves)
+    isLoading = false
 
     if(fromStart) goToFirstState()
     refreshUI()

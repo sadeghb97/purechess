@@ -1,1 +1,2 @@
-startGame();
+resetBoard();
+loadRepository()
