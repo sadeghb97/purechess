@@ -213,8 +213,9 @@ button {
 .actionbar {
     display: flex;
     align-items: center;
-    margin-top: 45px;
+    margin-top: 50px;
     height: 600px;
+    overflow-y: auto;
 }
 
 .actionbar.left {
@@ -223,6 +224,25 @@ button {
 
 .actionbar.right {
     margin-left: 8px;
+}
+
+.actionbar.openings {
+    display: block;
+    width: 300px;
+}
+
+.opening-box {
+    font-weight: bold;
+    max-width: 280px;
+    margin-bottom: 8px;
+}
+
+.opening-children-box {
+    max-width: 280px;
+}
+
+.opening-child {
+    margin-bottom: 8px;
 }
 
 .log {

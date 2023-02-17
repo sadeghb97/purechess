@@ -139,7 +139,6 @@ function stateBrowseOpenings(state, stateIndex){
     })
 
     if(curFoundOp.length > 0){
-        console.log("CurFoundOp: ", curFoundOp)
         state.opening = curFoundOp[curFoundOp.length - 1]
         const childrenIndexes = []
         const childrenObject = {}
@@ -154,6 +153,7 @@ function stateBrowseOpenings(state, stateIndex){
                         const nextMove = pieces[0]
                         const cObj = {
                             nm: nextMove,
+                            rem_moves: pieces,
                             length: pieces.length,
                             op: op
                         }
@@ -180,14 +180,72 @@ function stateBrowseOpenings(state, stateIndex){
     }
     else state.opening = false
 
-    updateBoardWithOpeningBrowseResults(state.id)
+    updateBoardWithOpeningBrowseResults(state.id, stateIndex)
 }
 
-function updateBoardWithOpeningBrowseResults(stateId){
+function updateBoardWithOpeningBrowseResults(stateId, stateIndex){
     const state = currentState()
-    if(state.id !== stateId || state.opening === null) return
+    const openingBox = document.getElementById("opening")
+    const childrenBox = document.getElementById("children")
 
-    console.log("OP", state.opening)
+    if(state.id !== stateId){
+        return
+    }
+
+    const lastOpening = getLastKnownOpening(stateIndex)
+    if(!lastOpening){
+        openingBox.style.display = 'none'
+        childrenBox.style.display = 'none'
+        return
+    }
+
+    const partMoves = getPartUciMoves(lastOpening.index, stateIndex)
+    const opening = lastOpening.op
+    const children = []
+
+    opening.children.forEach((child) => {
+        if(partMoves.length < child.rem_moves.length){
+            let qualified = true
+            for(let i=0; partMoves.length > i; i++){
+                if(partMoves[i] !== child.rem_moves[i]){
+                    qualified = false
+                    break
+                }
+            }
+
+            if(qualified) children.push(child)
+        }
+    })
+
+    console.log("PartMoves", partMoves)
+    console.log("OP", lastOpening)
+    console.log("OP2", opening)
+
+    openingBox.innerHTML = ''
+    const od = document.createElement("div")
+    od.innerText = opening.name
+    openingBox.appendChild(od)
+    const divider = document.createElement("div")
+    divider.innerText = "--------------"
+    openingBox.appendChild(divider)
+    openingBox.style.display = 'block'
+
+    childrenBox.innerHTML = ''
+    children.forEach((child) => {
+        const childDiv = document.createElement("div")
+        const childNameDiv = document.createElement("div")
+        const childReachDiv = document.createElement("div")
+        const childReachMoves = getPartPgn(child.op.pgn, lastOpening.index + partMoves.length)
+
+        childDiv.classList.add("opening-child")
+        childNameDiv.innerText = child.op.name
+        childReachDiv.innerText = childReachMoves
+
+        childDiv.appendChild(childNameDiv)
+        childDiv.appendChild(childReachDiv)
+        childrenBox.appendChild(childDiv)
+    })
+    childrenBox.style.display = 'block'
 }
 
 function simplifyFen(chess){

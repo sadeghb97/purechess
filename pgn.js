@@ -242,6 +242,23 @@ function getPGNMoves(pgnStr){
     return moves
 }
 
+function getPartPgn(pgnStr, start){
+    const moves = getPGNMoves(pgnStr)
+    let out = ""
+
+    for(let i=start; moves.length > i; i++){
+        if((i % 2) === 0){
+            if(out.length > 0) out += " "
+            const num = Math.floor(i / 2)
+            out += (num + ". ")
+        }
+        else if(i === start) out += "... "
+        else out += " "
+        out += moves[i]
+    }
+    return out
+}
+
 function loadPGN(pgnStr){
     const moves = getPGNMoves(pgnStr)
     resetBoard()

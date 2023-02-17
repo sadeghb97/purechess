@@ -168,6 +168,20 @@ function rateMovePerfect(){
     refreshUI()
 }
 
+function getLastKnownOpening(maxIndex){
+    let index = maxIndex
+    while(index >= 0){
+        if(game.moveStack[index].opening){
+            return {
+                index: index,
+                op: game.moveStack[index].opening
+            }
+        }
+        index--
+    }
+    return null
+}
+
 function fastLoadGame(gameObject, fromStart = false){
     startGame()
     boardFlipped = gameObject.flipped
@@ -321,4 +335,14 @@ function getCurrentStateEnginePositionLog(statePosition){
     }
 
     return engineLog
+}
+
+function getPartUciMoves(startIndex, endIndex){
+    const fullUci = getCurrentStateEnginePositionLog(endIndex)
+    const pieces = fullUci.split(" ")
+    const out = []
+    for(let i=startIndex; pieces.length>i; i++){
+        out.push(pieces[i])
+    }
+    return out
 }
