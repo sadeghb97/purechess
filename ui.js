@@ -118,6 +118,113 @@ function refreshUI() {
         }
         else engineEval(currentState(), currentStatePosition)
     }
+
+    if(currentState().opening !== null){
+        updateBoardWithOpeningBrowseResults(currentState().id)
+    }
+    else stateBrowseOpenings(currentState(), currentStatePosition)
+}
+
+function stateBrowseOpenings(state, stateIndex){
+    const curPgnStr = getCurrentStatePGNLog(stateIndex, true)
+    const curUciStr = getCurrentStateEnginePositionLog(stateIndex)
+    let curFoundOp = []
+
+    const curChessGame = new Chess()
+    curChessGame.load_pgn(curPgnStr)
+    const curChessFen = simplifyFen(curChessGame)
+
+    openings.forEach((op) => {
+        if(curChessFen === op.epd) curFoundOp.push(op)
+    })
+
+    if(curFoundOp.length > 0){
+        console.log("CurFoundOp: ", curFoundOp)
+        state.opening = curFoundOp[curFoundOp.length - 1]
+        const childrenIndexes = []
+        const childrenObject = {}
+
+        curFoundOp.forEach((foundOp) => {
+            openings.forEach((op) => {
+                if(foundOp.uci.length < op.uci.length){
+                    const startOpUci = op.uci.substring(0, foundOp.uci.length)
+                    if(startOpUci === foundOp.uci){
+                        const remUci = op.uci.substring(foundOp.uci.length + 1)
+                        const pieces = remUci.split(" ")
+                        const nextMove = pieces[0]
+                        const cObj = {
+                            nm: nextMove,
+                            length: pieces.length,
+                            op: op
+                        }
+
+                        if(!(nextMove in childrenObject) || cObj.length < childrenObject[nextMove].length){
+                            if(!(nextMove in childrenObject)) childrenIndexes.push(nextMove)
+                            childrenObject[nextMove] = cObj
+                        }
+                    }
+                }
+            })
+        })
+
+        const childrenList = []
+        childrenIndexes.forEach((ind) => {
+            childrenList.push(childrenObject[ind])
+        })
+
+        childrenList.sort((x, y) => {
+            return x.length - y.length
+        })
+
+        state.opening.children = childrenList
+    }
+    else state.opening = false
+
+    updateBoardWithOpeningBrowseResults(state.id)
+}
+
+function updateBoardWithOpeningBrowseResults(stateId){
+    const state = currentState()
+    if(state.id !== stateId || state.opening === null) return
+
+    console.log("OP", state.opening)
+}
+
+function simplifyFen(chess){
+    const pieces = chess.fen().split(" ")
+    let f = pieces[0] + " " + pieces[1] + " " + pieces[2] + " "
+    const eps = pieces[3]
+
+    if(eps !== '-') {
+        const epRow = 8 - eps[1]
+        let epCol = 0
+        if (eps[0] === 'b') epCol = 1
+        else if (eps[0] === 'c') epCol = 2
+        else if (eps[0] === 'd') epCol = 3
+        else if (eps[0] === 'e') epCol = 4
+        else if (eps[0] === 'f') epCol = 5
+        else if (eps[0] === 'g') epCol = 6
+        else if (eps[0] === 'h') epCol = 7
+
+        const color = chess.turn()
+        const board = chess.board()
+
+        let epNeed = false
+        if (color === 'w') {
+            const leftPiece = board[epRow + 1][epCol - 1]
+            const rightPiece = board[epRow + 1][epCol + 1]
+            if ((leftPiece != null && leftPiece.type === 'p' && leftPiece.color === 'w') ||
+                (rightPiece != null && rightPiece.type === 'p' && rightPiece.color === 'w')) epNeed = true
+        } else {
+            const leftPiece = board[epRow - 1][epCol - 1]
+            const rightPiece = board[epRow - 1][epCol + 1]
+            if ((leftPiece != null && leftPiece.type === 'p' && leftPiece.color === 'b') ||
+                (rightPiece != null && rightPiece.type === 'p' && rightPiece.color === 'b')) epNeed = true
+        }
+
+        if (epNeed) return f + eps
+    }
+    return f + "-"
 }
 
 function engineEval(state, stateIndex){

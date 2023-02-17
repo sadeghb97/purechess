@@ -73,10 +73,10 @@ function pgnMoves(moves){
     })
 }
 
-function getPGNString(state, attPiece, sp, ep, isCapture, mRate = "normal"){
+function getPGNString(state, attPiece, sp, ep, isCapture, mRate = "normal", forceExt = false){
     let pgn = (attPiece.toLowerCase() === 'p' ? "" : attPiece.toUpperCase())
     if(attPiece.toLowerCase() === 'p') pgn +=
-        getSummaryPawnPGNPosition(state, sp, ep, attPiece, isCapture)
+        getSummaryPawnPGNPosition(state, sp, ep, attPiece, isCapture, forceExt)
     else pgn += getSummaryPGNPosition(state ,sp, ep, attPiece)
 
     if(isCapture) pgn += "x"
@@ -96,11 +96,17 @@ function getPGNPosition(pos){
     else return "h" + row
 }
 
-function getSummaryPawnPGNPosition(state, sp, ep, pawnPiece, isCapture){
+function getSummaryPawnPGNPosition(state, sp, ep, pawnPiece, isCapture, forceExt = false){
     if(!isCapture) return ""
     const possibleSP = ep[1] > sp[1] ? [sp[0], sp[1] + 2] : [sp[0], sp[1] - 2]
-    if(sp[1] < 0 || sp[1] > 7) return ""
-    if(state.board[possibleSP[0]][possibleSP[1]] !== pawnPiece) return ""
+    if(sp[1] < 0 || sp[1] > 7){
+        if(forceExt) return  getPGNPosition(sp)[0]
+        return ""
+    }
+    if(state.board[possibleSP[0]][possibleSP[1]] !== pawnPiece){
+        if(forceExt) return  getPGNPosition(sp)[0]
+        return ""
+    }
     return  getPGNPosition(sp)[0]
 }
 
@@ -221,7 +227,7 @@ function getAllPossibleAttackers(state, piece, ep, validate = true){
     return positions
 }
 
-function loadPGN(pgnStr){
+function getPGNMoves(pgnStr){
     let pgnMovesStr = pgnStr.replaceAll("\n", " ")
     pgnMovesStr = pgnMovesStr.replaceAll("  ", " ")
     pgnMovesStr = pgnMovesStr.substring(pgnMovesStr.lastIndexOf("]") + 1).trim()
@@ -233,6 +239,11 @@ function loadPGN(pgnStr){
         moves.push(p)
     })
 
+    return moves
+}
+
+function loadPGN(pgnStr){
+    const moves = getPGNMoves(pgnStr)
     resetBoard()
     pgnMoves(moves)
     refreshUI()

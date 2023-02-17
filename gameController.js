@@ -65,6 +65,8 @@ function stateMovePiece(nextState, startingPosition, endingPosition, turnFinishi
             if(turnFinishing){
                 nextState.pgn = getPGNString(currentState(), attackerPiece,
                     startingPosition, endingPosition, isCapture)
+                nextState.altPgn = getPGNString(currentState(), attackerPiece,
+                    startingPosition, endingPosition, isCapture, "normal", true)
                 finishTurn(nextState)
             }
         }
@@ -183,8 +185,14 @@ function castling(state, isKingSide){
 
     stateStartAndEndPosition(cloneState, sp, ep)
 
-    if(isKingSide) cloneState.pgn = "o-o"
-    else cloneState.pgn = "o-o-o"
+    if(isKingSide){
+        cloneState.pgn = "o-o"
+        cloneState.altPgn = "O-O"
+    }
+    else{
+        cloneState.pgn = "o-o-o"
+        cloneState.altPgn = "O-O-O"
+    }
     finishTurn(cloneState)
 }
 
@@ -203,6 +211,8 @@ function enPassant(startingPosition){
     stateStartAndEndPosition(cloneState, startingPosition, cloneState.enPos)
     cloneState.pgn = getPGNString(currentState(), '',
         startingPosition, cloneState.enPos, true)
+    cloneState.altPgn = getPGNString(currentState(), '',
+        startingPosition, cloneState.enPos, true, "normal", true)
 
     cloneState.enPos = null
     finishTurn(cloneState)

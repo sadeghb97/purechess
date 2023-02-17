@@ -1,4 +1,4 @@
-const openings = [
+const myopenings = [
     {
       title: "Stafford Gambit",
       moves: "1. e4 e5 2. Nf3 Nf6 3. Nxe5 Nc6 4. Nxc6 dxc6"
@@ -10,9 +10,9 @@ const openings = [
 ]
 
 function staffordGambit(){
-    loadPGN(openings[0].moves)
+    loadPGN(myopenings[0].moves)
 }
 
 function danishGambit(){
-    loadPGN(openings[1].moves)
+    loadPGN(myopenings[1].moves)
 }

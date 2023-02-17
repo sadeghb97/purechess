@@ -33,7 +33,8 @@ function initState(board = [['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
         startPosition: null,
         endPosition: null,
         epPos: null,
-        eval: null
+        eval: null,
+        opening: null
     }
 
     game.moveStack[0] = cState
@@ -56,6 +57,7 @@ function pushState(state){
 
     state.eval = null
     state.id = Date.now();
+    state.opening = null
 }
 
 function goToFirstState(){
@@ -242,7 +244,7 @@ function save(){
         finalFn = "fg-" + filenameInp.value
     }
     else {
-        const openings = document.getElementById("openings")
+        const openings = document.getElementById("myopenings")
         extra = {
             type: "trap",
             opening: openings.value,
@@ -289,11 +291,11 @@ function exportGame(){
     }, 250)
 }
 
-function getCurrentStatePGNLog(statePosition){
+function getCurrentStatePGNLog(statePosition, forceExt = false){
     let pgnLog = ""
     for(let i=1; statePosition >= i; i++){
         const move = game.moveStack[i]
-        let pgn = move.pgn
+        let pgn = !forceExt ? move.pgn : move.altPgn
         if(move.lmrate === 'blunder') pgn += "?"
         else if(move.lmrate === 'perfect') pgn += "!"
 
