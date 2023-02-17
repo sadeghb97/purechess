@@ -120,14 +120,13 @@ function refreshUI() {
     }
 
     if(currentState().opening !== null){
-        updateBoardWithOpeningBrowseResults(currentState().id)
+        updateBoardWithOpeningBrowseResults(currentState().id, currentStatePosition)
     }
     else stateBrowseOpenings(currentState(), currentStatePosition)
 }
 
 function stateBrowseOpenings(state, stateIndex){
     const curPgnStr = getCurrentStatePGNLog(stateIndex, true)
-    const curUciStr = getCurrentStateEnginePositionLog(stateIndex)
     let curFoundOp = []
 
     const curChessGame = new Chess()
@@ -216,10 +215,6 @@ function updateBoardWithOpeningBrowseResults(stateId, stateIndex){
             if(qualified) children.push(child)
         }
     })
-
-    console.log("PartMoves", partMoves)
-    console.log("OP", lastOpening)
-    console.log("OP2", opening)
 
     openingBox.innerHTML = ''
     const od = document.createElement("div")
