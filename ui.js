@@ -305,6 +305,7 @@ function stateBrowseOpenings(state, stateIndex){
         state.opening = curFoundOp[curFoundOp.length - 1]
         const childrenIndexes = []
         const childrenObject = {}
+        const frequencyList = {}
 
         curFoundOp.forEach((foundOp) => {
             openings.forEach((op) => {
@@ -315,6 +316,10 @@ function stateBrowseOpenings(state, stateIndex){
                         const remUci = op.uci.substring(sPos)
                         const pieces = remUci.split(" ")
                         const nextMove = pieces[0]
+
+                        if(!(nextMove in frequencyList)) frequencyList[nextMove] = 0
+                        frequencyList[nextMove]++
+
                         const cObj = {
                             nm: nextMove,
                             rem_moves: pieces,
@@ -333,10 +338,14 @@ function stateBrowseOpenings(state, stateIndex){
 
         const childrenList = []
         childrenIndexes.forEach((ind) => {
+            childrenObject[ind].frequency = frequencyList[ind]
             childrenList.push(childrenObject[ind])
         })
 
         childrenList.sort((x, y) => {
+            if(x.length === y.length){
+                return y.frequency - x.frequency
+            }
             return x.length - y.length
         })
 
