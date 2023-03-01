@@ -247,13 +247,12 @@ function getPartPgn(pgnStr, start){
     let out = ""
 
     for(let i=start; moves.length > i; i++){
-        if((i % 2) === 0){
-            if(out.length > 0) out += " "
-            const num = Math.floor(i / 2)
-            out += (num + ". ")
-        }
-        else if(i === start) out += "... "
-        else out += " "
+        if(out.length > 0) out += " "
+        const num = Math.floor(i / 2) + 1
+        out += num
+
+        if((i % 2) === 0) out += ". "
+        else out += "... "
         out += moves[i]
     }
     return out

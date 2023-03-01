@@ -34,7 +34,8 @@ function initState(board = [['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
         endPosition: null,
         epPos: null,
         eval: null,
-        opening: null
+        opening: null,
+        history: null
     }
 
     game.moveStack[0] = cState
@@ -58,6 +59,7 @@ function pushState(state){
     state.eval = null
     state.id = Date.now();
     state.opening = null
+    state.history = null
 }
 
 function goToFirstState(){
@@ -341,6 +343,8 @@ function getCurrentStateEnginePositionLog(statePosition){
 
 function getPartUciMoves(startIndex, endIndex){
     const fullUci = getCurrentStateEnginePositionLog(endIndex)
+    if(fullUci.length <= 0) return []
+
     const pieces = fullUci.split(" ")
     const out = []
     for(let i=startIndex; pieces.length>i; i++){

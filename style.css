@@ -235,17 +235,22 @@ button {
 
 .actionbar.openings {
     display: block;
-    width: 300px;
+    width: 240px;
 }
 
 .opening-box {
     font-weight: bold;
-    max-width: 280px;
+    max-width: 220px;
+    margin-bottom: 8px;
+}
+
+.history-box {
+    max-width: 220px;
     margin-bottom: 8px;
 }
 
 .opening-children-box {
-    max-width: 280px;
+    max-width: 220px;
 }
 
 .opening-child {
