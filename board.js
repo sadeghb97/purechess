@@ -111,7 +111,7 @@ function updateStatus () {
     const curUci = getCurrentStateEnginePositionLog(game.statePosition)
 
     $status.html(status)
-    $fen.html(chessGame.fen())
+    $fen.html(simplifyFen(chessGame))
     $pgn.html(curPgn)
 
     if(!defective){
