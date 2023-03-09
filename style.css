@@ -269,6 +269,10 @@ button {
     margin-bottom: 8px;
 }
 
+.active-history {
+    background-color: #eeb279;
+}
+
 .log {
     width: 600px;
     margin-top: 16px;

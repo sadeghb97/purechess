@@ -120,10 +120,6 @@ function stateBrowseHistory(state, stateIndex){
         resChildren.push(found[fm])
     })
 
-    resChildren.sort((f, s) => {
-        return s.det.count - f.det.count
-    })
-
     state.history = {
         details: det,
         white_det: wdet,
@@ -134,6 +130,7 @@ function stateBrowseHistory(state, stateIndex){
 }
 
 function updateBoardWithHistoryBrowseResults(stateId, stateIndex){
+    const turn = chessGame.turn()
     const state = currentState()
     const historyBox = document.getElementById("history")
     const childrenBox = document.getElementById("hchildren")
@@ -155,6 +152,9 @@ function updateBoardWithHistoryBrowseResults(stateId, stateIndex){
     bod.innerHTML = "Black: " + history.black_det.count + " (" + history.black_det.white +
         ' - <span style="font-weight: bold">' + history.black_det.black + "</span>)"
 
+    if(turn === 'w') wod.classList.add("active-history")
+    else bod.classList.add("active-history")
+
     historyBox.appendChild(od)
     historyBox.appendChild(wod)
     historyBox.appendChild(bod)
@@ -162,6 +162,17 @@ function updateBoardWithHistoryBrowseResults(stateId, stateIndex){
     divider.innerHTML = '<span style="font-weight: bold">--------------</span>'
     historyBox.appendChild(divider)
     historyBox.style.display = 'block'
+
+    if(turn === 'w') {
+        history.children.sort((f, s) => {
+            return s.wdet.count - f.wdet.count
+        })
+    }
+    else {
+        history.children.sort((f, s) => {
+            return s.bdet.count - f.bdet.count
+        })
+    }
 
     childrenBox.innerHTML = ''
     history.children.forEach((child) => {
@@ -177,6 +188,9 @@ function updateBoardWithHistoryBrowseResults(stateId, stateIndex){
             "</span> - " + child.wdet.black + ")"
         blackDiv.innerHTML = "Black: " + child.bdet.count + " (" + child.bdet.white +
             ' - <span style="font-weight: bold">' + child.bdet.black + "</span>)"
+
+        if(turn === 'w') whiteDiv.classList.add("active-history")
+        else blackDiv.classList.add("active-history")
 
         childDiv.appendChild(childNameDiv)
         childDiv.appendChild(whiteDiv)
