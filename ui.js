@@ -403,6 +403,7 @@ function engineEval(state, stateIndex){
 
 function updateBoardWithEngineResults(stateId){
     const bsElement = document.getElementById("black_strip_status")
+    const valEl = document.getElementById("eval_value")
     const state = currentState()
     if(state.id !== stateId || state.eval === null) return
 
@@ -410,12 +411,16 @@ function updateBoardWithEngineResults(stateId){
 
     if(state.eval.forceMate){
         const isWhiteTurn = chessGame.turn() === 'w'
+
         if((isWhiteTurn && state.eval.mateNumber >= 0) || (!isWhiteTurn && state.eval.mateNumber < 0)){
             bsElement.style.height = '0'
         }
         else {
             bsElement.style.height = '100%'
         }
+
+        let pureMN = Math.abs(state.eval.mateNumber) + 1
+        valEl.innerHTML = "<span style='font-weight: bold;'>(" + pureMN + ")</span>"
     }
     else {
         const score = state.eval.score
@@ -434,6 +439,8 @@ function updateBoardWithEngineResults(stateId){
 
         let shPercent = pureSCP < 0 ? 50 + ev : 50 - ev
         bsElement.style.height = shPercent + '%'
+
+        valEl.innerText = pureSCP
     }
 
     if(state.eval.bm_from != null){
