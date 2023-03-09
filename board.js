@@ -2,6 +2,8 @@
 // https://github.com/jhlywa/chess.js
 
 let chessBoard = null
+const squareClass = 'square-55d63'
+const $boardElement = $('#myBoard')
 let lastMove = null
 const $status = $('#statuslog')
 const $fen = $('#fenlog')
@@ -41,8 +43,6 @@ function movePiece(source, target){
     // illegal move
     if (move === null) return 'snapback'
     lastMove = move
-
-    updateStatus()
 }
 
 function makePgnMove(pgm){
@@ -53,9 +53,20 @@ function makePgnMove(pgm){
         pgm = pcpPosStr[0] + pgm
     }
 
+    let lmr = "normal"
+    if(pgm.substring(pgm.length - 1) === '!'){
+        lmr = "perfect"
+    }
+    else if(pgm.substring(pgm.length - 1) === '?'){
+        lmr = "blunder"
+    }
+
     lastMove = chessGame.move(pgm)
     updateStatus()
     finishTurn()
+
+    if(lmr === "perfect") rateMovePerfect()
+    else if(lmr === "blunder") rateMoveBlunder()
 }
 
 function updateStatus () {
@@ -86,11 +97,12 @@ function updateStatus () {
         }
     }
 
+    const curPgn = getCurrentStatePGNLog(game.statePosition)
     const curUci = getCurrentStateEnginePositionLog(game.statePosition)
 
     $status.html(status)
     $fen.html(chessGame.fen())
-    $pgn.html(chessGame.pgn())
+    $pgn.html(curPgn)
     $uci.html(curUci)
 }
 
@@ -102,6 +114,24 @@ function refreshBoard(){
     chessBoard.position(chessGame.fen())
     updateStatus()
     setOrientation(boardFlipped)
+    highlightLastMove()
+}
+
+function highlightLastMove(){
+    $boardElement.find('.' + squareClass).removeClass('highlight-normal')
+    $boardElement.find('.' + squareClass).removeClass('highlight-perfect')
+    $boardElement.find('.' + squareClass).removeClass('highlight-blunder')
+
+    const lm = currentState().move
+    if(lm == null) return
+
+    const lmRate = currentState().lmrate
+    let hlClass = "highlight-normal"
+    if(lmRate === 'perfect') hlClass = "highlight-perfect"
+    else if(lmRate === 'blunder') hlClass = "highlight-blunder"
+
+    $boardElement.find('.square-' + lm.from).addClass(hlClass)
+    $boardElement.find('.square-' + lm.to).addClass(hlClass)
 }
 
 function setOrientation(or){

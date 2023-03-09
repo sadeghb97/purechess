@@ -141,24 +141,22 @@ function clearStatesAfterCurrent(){
     game.moveStack.length = game.statePosition + 1
 }
 
-function stateStartAndEndPosition(state, startingPosition, endingPosition){
-    state.startPosition = startingPosition
-    state.endPosition = endingPosition
-}
-
 function rateMoveNormal(){
     currentState().lmrate = "normal"
-    refreshUI()
+    highlightLastMove()
+    updateStatus()
 }
 
 function rateMoveBlunder(){
     currentState().lmrate = "blunder"
-    refreshUI()
+    highlightLastMove()
+    updateStatus()
 }
 
 function rateMovePerfect(){
     currentState().lmrate = "perfect"
-    refreshUI()
+    highlightLastMove()
+    updateStatus()
 }
 
 function getLastKnownOpening(maxIndex){
@@ -318,7 +316,25 @@ function getCurrentStatePGNLog(statePosition, forceExt = false){
 
     return pgnLog*/
 
-    return game.moveStack[statePosition].pgn
+    const rawPgn = game.moveStack[statePosition].pgn
+    if(rawPgn.length < 1) return ""
+
+    let out = ""
+    const pieces = rawPgn.split(" ")
+    let i = 1;
+    pieces.forEach((p) => {
+        if(out.length > 0) out += " "
+        out += p
+
+        if(!p.includes(".")){
+            const lmRate = game.moveStack[i].lmrate
+            if(lmRate === "perfect") out += "!"
+            else if(lmRate === "blunder") out += "?"
+            i++
+        }
+    })
+
+    return out
 }
 
 function getCurrentStateEnginePositionLog(statePosition){
