@@ -12,12 +12,6 @@ function resetBoard() {
 }
 
 function finishTurn(){
-    /*if(!checkKingsSafety(nextState)) return
-    toggleTurn(nextState)
-    pushState(nextState)
-    incrementTimer()
-    refreshUI()*/
-
     pushState()
     incrementTimer()
     refreshUI()

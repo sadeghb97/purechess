@@ -15,25 +15,6 @@ function refreshUI() {
         evalBarEl.style.display = 'none'
     }
 
-    /*if(currentState().startPosition != null && currentState().endPosition != null){
-        const sp = !boardFlipped ? currentState().startPosition :
-            [7 - currentState().startPosition[0], 7 - currentState().startPosition[1]]
-        const ep = !boardFlipped ? currentState().endPosition :
-            [7 - currentState().endPosition[0], 7 - currentState().endPosition[1]]
-
-        const startSquare = document.getElementById(`${sp[0] + 1}${sp[1] + 1}`);
-        const endSquare = document.getElementById(`${ep[0] + 1}${ep[1] + 1}`);
-
-        let lmEffect = "last-move"
-        if("lmrate" in currentState()){
-            if(currentState().lmrate === "blunder") lmEffect = "blunder"
-            else if(currentState().lmrate === "perfect") lmEffect = "perfect"
-        }
-
-        startSquare.classList.add(lmEffect);
-        endSquare.classList.add(lmEffect);
-    }*/
-
     if(USE_ENGINE){
         if(currentState().eval !== null){
             updateBoardWithEngineResults(currentState().id)

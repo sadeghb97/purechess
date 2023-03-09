@@ -10,6 +10,7 @@ const $fen = $('#fenlog')
 const $pgn = $('#pgnlog')
 const $uci = $('#ucilog')
 let boardFlipped = false
+let rejectedMove = false
 
 function onDragStart (source, piece, position, orientation) {
     // do not pick up pieces if the game is over
@@ -20,6 +21,8 @@ function onDragStart (source, piece, position, orientation) {
         (chessGame.turn() === 'b' && piece.search(/^w/) !== -1)) {
         return false
     }
+
+    rejectedMove = false
 }
 
 function onDrop (source, target) {
@@ -29,7 +32,11 @@ function onDrop (source, target) {
 // update the board position after the piece snap
 // for castling, en passant, pawn promotion
 function onSnapEnd () {
-    finishTurn()
+    if(!rejectedMove) finishTurn()
+    else {
+        refreshBoard()
+        rejectedMove = false
+    }
 }
 
 function movePiece(source, target){
@@ -41,7 +48,10 @@ function movePiece(source, target){
     })
 
     // illegal move
-    if (move === null) return 'snapback'
+    if (move === null) {
+        rejectedMove = true
+        return 'snapback'
+    }
     lastMove = move
 }
 
