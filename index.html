@@ -8,6 +8,16 @@
     <link rel="icon" href="assets/black_knight.png" type="image/png" sizes="16x16">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="lib/modal.css">
+    <link rel="stylesheet" href="lib/chessboard-1.0.0.css">
+
+    <script
+            src="https://code.jquery.com/jquery-3.5.1.js"
+            integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+            crossorigin="anonymous">
+    </script>
+
+    <script src="lib/chess.js"></script>
+    <script src="lib/chessboard-1.0.0.js"></script>
 
     <title>Web Chess</title>
 </head>
@@ -48,88 +58,9 @@
 
                 </div>
             </div>
-            <div class="board">
-                <div class="row">
-                    <div id="11" class="square white"></div>
-                    <div id="12" class="square black"></div>
-                    <div id="13" class="square white"></div>
-                    <div id="14" class="square black"></div>
-                    <div id="15" class="square white"></div>
-                    <div id="16" class="square black"></div>
-                    <div id="17" class="square white"></div>
-                    <div id="18" class="square black"></div>
-                </div>
-                <div class="row">
-                    <div id="21" class="square black"></div>
-                    <div id="22" class="square white"></div>
-                    <div id="23" class="square black"></div>
-                    <div id="24" class="square white"></div>
-                    <div id="25" class="square black"></div>
-                    <div id="26" class="square white"></div>
-                    <div id="27" class="square black"></div>
-                    <div id="28" class="square white"></div>
-                </div>
-                <div class="row">
-                    <div id="31" class="square white"></div>
-                    <div id="32" class="square black"></div>
-                    <div id="33" class="square white"></div>
-                    <div id="34" class="square black"></div>
-                    <div id="35" class="square white"></div>
-                    <div id="36" class="square black"></div>
-                    <div id="37" class="square white"></div>
-                    <div id="38" class="square black"></div>
-                </div>
-                <div class="row">
-                    <div id="41" class="square black"></div>
-                    <div id="42" class="square white"></div>
-                    <div id="43" class="square black"></div>
-                    <div id="44" class="square white"></div>
-                    <div id="45" class="square black"></div>
-                    <div id="46" class="square white"></div>
-                    <div id="47" class="square black"></div>
-                    <div id="48" class="square white"></div>
-                </div>
-                <div class="row">
-                    <div id="51" class="square white"></div>
-                    <div id="52" class="square black"></div>
-                    <div id="53" class="square white"></div>
-                    <div id="54" class="square black"></div>
-                    <div id="55" class="square white"></div>
-                    <div id="56" class="square black"></div>
-                    <div id="57" class="square white"></div>
-                    <div id="58" class="square black"></div>
-                </div>
-                <div class="row">
-                    <div id="61" class="square black"></div>
-                    <div id="62" class="square white"></div>
-                    <div id="63" class="square black"></div>
-                    <div id="64" class="square white"></div>
-                    <div id="65" class="square black"></div>
-                    <div id="66" class="square white"></div>
-                    <div id="67" class="square black"></div>
-                    <div id="68" class="square white"></div>
-                </div>
-                <div class="row">
-                    <div id="71" class="square white"></div>
-                    <div id="72" class="square black"></div>
-                    <div id="73" class="square white"></div>
-                    <div id="74" class="square black"></div>
-                    <div id="75" class="square white"></div>
-                    <div id="76" class="square black"></div>
-                    <div id="77" class="square white"></div>
-                    <div id="78" class="square black"></div>
-                </div>
-                <div class="row">
-                    <div id="81" class="square black"></div>
-                    <div id="82" class="square white"></div>
-                    <div id="83" class="square black"></div>
-                    <div id="84" class="square white"></div>
-                    <div id="85" class="square black"></div>
-                    <div id="86" class="square white"></div>
-                    <div id="87" class="square black"></div>
-                    <div id="88" class="square white"></div>
-                </div>
-            </div>
+
+            <div id="myBoard" style="width: 600px"></div>
+
             <div class="prof-container">
                 <img id="bottom_avatar" src="assets/white_avatar.png" />
                 <div>
@@ -169,23 +100,22 @@
         </div>
     </div>
 
+    <div id="statuslog" class="log"></div>
     <div id="pgnlog" class="log" onclick="selectAndCopyContent('pgnlog')"></div>
-    <div id="eplog" class="log" onclick="selectAndCopyContent('eplog')"></div>
+    <div id="fenlog" class="log" onclick="selectAndCopyContent('fenlog')"></div>
+    <div id="ucilog" class="log" onclick="selectAndCopyContent('ucilog')"></div>
 
-    <div class="centcont" id="games_library" style="margin-top: 64px; margin-bottom: 32px;">
-
-    </div>
+    <div class="centcont" id="games_library" style="margin-top: 64px; margin-bottom: 32px;"></div>
 
     <script src="lib/modal.js"></script>
     <script src="lib/openings.js"></script>
-    <script src="lib/chess.js"></script>
     <script src="lib/mygames.js"></script>
-    <script src="state.js"></script>
     <script src="utils.js"></script>
     <script src="ui.js"></script>
     <script src="gameController.js"></script>
-    <script src="validate.js"></script>
     <script src="pgn.js"></script>
+    <script src="state.js"></script>
+    <script src="board.js"></script>
     <script src="myopenings.js"></script>
     <script src="traps.js"></script>
     <script src="repository.js"></script>

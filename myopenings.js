@@ -5,7 +5,7 @@ const myopenings = [
     },
     {
         title: "Danish Gambit",
-        moves: "1. e4 e5 2. d4 xd4 3. c3 xc3 4. Bc4 xb2 5. Bxb2"
+        moves: "1. e4 e5 2. d4 exd4 3. c3 xc3 4. Bc4 xb2 5. Bxb2"
     }
 ]
 

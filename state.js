@@ -5,15 +5,10 @@ let game = {
     black_name: "Black",
     moveStack: null
 }
+let chessGame = null
 
-function initState(board = [['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
-    ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
-    ['.', '.', '.', '.', '.', '.', '.', '.'],
-    ['.', '.', '.', '.', '.', '.', '.', '.'],
-    ['.', '.', '.', '.', '.', '.', '.', '.'],
-    ['.', '.', '.', '.', '.', '.', '.', '.'],
-    ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
-    ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r']], curPlayer = "white"){
+function initState(){
+    chessGame = new Chess()
     clearInterval(intervalID)
     game.statePosition = 0;
     game.moveStack = [];
@@ -22,17 +17,10 @@ function initState(board = [['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
 
     const cState = {
         id: Date.now(),
-        board: board,
-        curPlayer: curPlayer,
-        whiteKingSideCastleMoved: false,
-        whiteQueenSideCastleMoved: false,
-        whiteKinkMoved: false,
-        blackKingSideCastleMoved: false,
-        blackQueenSideCastleMoved: false,
-        blackKinkMoved: false,
+        fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+        pgn: "",
         startPosition: null,
         endPosition: null,
-        epPos: null,
         eval: null,
         opening: null,
         history: null
@@ -51,27 +39,42 @@ function getCurrentStateClone(){
     return clone
 }
 
-function pushState(state){
+function pushState(){
+    const ns = getCurrentStateClone()
+    ns.fen = chessGame.fen()
+    ns.pgn = chessGame.pgn()
+    ns.move = lastMove
+
     game.statePosition++
-    game.moveStack[game.statePosition] = state
+    game.moveStack[game.statePosition] = ns
     game.moveStack.length = game.statePosition + 1
 
-    state.eval = null
-    state.id = Date.now();
-    state.opening = null
-    state.history = null
+    ns.eval = null
+    ns.id = Date.now();
+    ns.opening = null
+    ns.history = null
 }
 
 function goToFirstState(){
     game.statePosition = 0
+    chessGame = new Chess()
+    chessGame.load_pgn(currentState().pgn)
 }
 
 function prevState(){
-    if(game.statePosition > 0) game.statePosition--
+    if(game.statePosition > 0){
+        game.statePosition--
+        chessGame = new Chess()
+        chessGame.load_pgn(currentState().pgn)
+    }
 }
 
 function nextState(){
-    if(game.statePosition < (game.moveStack.length - 1)) game.statePosition++
+    if(game.statePosition < (game.moveStack.length - 1)){
+        game.statePosition++
+        chessGame = new Chess()
+        chessGame.load_pgn(currentState().pgn)
+    }
 }
 
 function isEqualBoards(firstBoard, secBoard){
@@ -112,7 +115,7 @@ function startClock(){
     if(game.white_time == null || game.black_time == null) initClock()
 
     intervalID = setInterval(() => {
-        if(currentState().curPlayer === "white"){
+        if(chessGame.turn() === "w"){
             if(game.white_time >= 50) game.white_time -= 50
             else game.white_time = 0
         }
@@ -126,7 +129,7 @@ function startClock(){
 }
 
 function incrementTimer(){
-    if (currentState().curPlayer === 'white') {
+    if (chessGame.turn() === 'w') {
         if(game.white_time != null) game.white_time += game.reward_time
     }
     else {
@@ -138,21 +141,9 @@ function clearStatesAfterCurrent(){
     game.moveStack.length = game.statePosition + 1
 }
 
-function toggleTurn(state){
-    if (state.curPlayer === 'white') {
-        state.curPlayer = 'black';
-    } else {
-        state.curPlayer = 'white';
-    }
-}
-
 function stateStartAndEndPosition(state, startingPosition, endingPosition){
     state.startPosition = startingPosition
     state.endPosition = endingPosition
-}
-
-function finalPosition(rawPosition){
-    return !boardFlipped ? rawPosition : [7 - rawPosition[0], 7 - rawPosition[1]]
 }
 
 function rateMoveNormal(){
@@ -310,7 +301,7 @@ function exportGame(){
 }
 
 function getCurrentStatePGNLog(statePosition, forceExt = false){
-    let pgnLog = ""
+    /*let pgnLog = ""
     for(let i=1; statePosition >= i; i++){
         const move = game.moveStack[i]
         let pgn = !forceExt ? move.pgn : move.altPgn
@@ -325,15 +316,18 @@ function getCurrentStatePGNLog(statePosition, forceExt = false){
         pgnLog += pgn
     }
 
-    return pgnLog
+    return pgnLog*/
+
+    return game.moveStack[statePosition].pgn
 }
 
 function getCurrentStateEnginePositionLog(statePosition){
     let engineLog = ""
     for(let i=1; statePosition >= i; i++){
-        const move = game.moveStack[i]
-        const spStr = getPGNPosition(move.startPosition)
-        const epStr = getPGNPosition(move.endPosition)
+        const move = game.moveStack[i].move
+        if(move === null) break
+        const spStr = move.from
+        const epStr = move.to
         if(engineLog.length !== 0) engineLog += " "
         engineLog += (spStr + epStr)
     }
@@ -351,4 +345,34 @@ function getPartUciMoves(startIndex, endIndex){
         out.push(pieces[i])
     }
     return out
+}
+
+function pawnCapturePossible(chessObject, ep){
+    const epPos = getPositionArray(ep)
+    const epRow = epPos[0]
+    let epCol = epPos[1]
+
+    const color = chessObject.turn()
+    const board = chessObject.board()
+
+    if (color === 'w') {
+        const lpPos = [epRow + 1, epCol - 1]
+        const rpPos = [epRow + 1, epCol + 1]
+        const leftPiece = board[lpPos[0]][lpPos[1]]
+        const rightPiece = board[rpPos[0]][rpPos[1]]
+
+        if (leftPiece != null && leftPiece.type === 'p' && leftPiece.color === 'w') return lpPos
+        if (rightPiece != null && rightPiece.type === 'p' && rightPiece.color === 'w') return rpPos
+    }
+    else {
+        const lpPos = [epRow - 1, epCol - 1]
+        const rpPos = [epRow - 1, epCol + 1]
+        const leftPiece = board[lpPos[0]][lpPos[1]]
+        const rightPiece = board[rpPos[0]][rpPos[1]]
+
+        if (leftPiece != null && leftPiece.type === 'p' && leftPiece.color === 'b') return lpPos
+        if (rightPiece != null && rightPiece.type === 'p' && rightPiece.color === 'b') return rpPos
+    }
+
+    return false
 }
