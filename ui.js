@@ -5,6 +5,7 @@ function refreshUI() {
     const currentStatePosition = game.statePosition
     const perfMoveButton = document.getElementById("do_best_move")
     const evalBarEl = document.getElementById("eval_bar")
+    const historyContainer = document.getElementById("history_container")
 
     if(USE_ENGINE){
         perfMoveButton.style.display = 'inline'
@@ -27,11 +28,13 @@ function refreshUI() {
     }
     else stateBrowseOpenings(currentState(), currentStatePosition)
 
-    if (currentState().history !== null) {
-        updateBoardWithHistoryBrowseResults(currentState().id, currentStatePosition)
+    if(!defective) {
+        if (currentState().history !== null) {
+            updateBoardWithHistoryBrowseResults(currentState().id, currentStatePosition)
+        }
+        else stateBrowseHistory(currentState(), currentStatePosition)
     }
-    else stateBrowseHistory(currentState(), currentStatePosition)
-
+    else historyContainer.style.display = "none"
 }
 
 function stateBrowseHistory(state, stateIndex){
@@ -132,6 +135,7 @@ function stateBrowseHistory(state, stateIndex){
 function updateBoardWithHistoryBrowseResults(stateId, stateIndex){
     const turn = chessGame.turn()
     const state = currentState()
+    const historyContainer = document.getElementById("history_container")
     const historyBox = document.getElementById("history")
     const childrenBox = document.getElementById("hchildren")
 
@@ -201,14 +205,22 @@ function updateBoardWithHistoryBrowseResults(stateId, stateIndex){
             browserMoveClick(child.move)
         }
     })
+
+    historyContainer.style.display = "block"
 }
 
 function stateBrowseOpenings(state, stateIndex){
-    const curPgnStr = getCurrentStatePGNLog(stateIndex, true)
-    let curFoundOp = []
+    let curChessGame = null
+    if(defective){
+        curChessGame = chessGame
+    }
+    else {
+        const curPgnStr = getCurrentStatePGNLog(stateIndex, true)
+        curChessGame = new Chess()
+        curChessGame.load_pgn(curPgnStr)
+    }
 
-    const curChessGame = new Chess()
-    curChessGame.load_pgn(curPgnStr)
+    let curFoundOp = []
     const curChessFen = simplifyFen(curChessGame)
 
     openings.forEach((op) => {
@@ -396,7 +408,14 @@ function engineEval(state, stateIndex){
     }
 
     engine.postMessage('ucinewgame')
-    engine.postMessage('position startpos moves ' + getCurrentStateEnginePositionLog(stateIndex))
+
+    if(!defective) {
+        engine.postMessage('position startpos moves ' + getCurrentStateEnginePositionLog(stateIndex))
+    }
+    else {
+        engine.postMessage('position fen ' + chessGame.fen())
+    }
+
     engine.postMessage('eval')
     engine.postMessage('go depth ' + 10);
 }

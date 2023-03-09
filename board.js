@@ -113,7 +113,12 @@ function updateStatus () {
     $status.html(status)
     $fen.html(chessGame.fen())
     $pgn.html(curPgn)
-    $uci.html(curUci)
+
+    if(!defective){
+        $uci.html(curUci)
+        $uci.css("display", "block");
+    }
+    else $uci.css("display", "none");
 }
 
 function flipBoard(){

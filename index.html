@@ -79,7 +79,7 @@
                 <button class="button normal" onclick="rateMoveNormal()">Normal</button>
                 <button class="button perfect" onclick="rateMovePerfect()">Perfect</button>
                 <div style="height: 12px;"></div>
-                <button class="button" onclick="loadBoard()">Board</button>
+                <button class="button" onclick="loadFen()">Fen</button>
                 <button class="button" onclick="loadGameFromPrompt()">Load</button>
                 <button class="button" onclick="loadGamePromptPGN()">PGN</button>
                 <button class="button jsModalTrigger"
@@ -93,7 +93,7 @@
             </div>
         </div>
 
-        <div class="actionbar right openings">
+        <div id="history_container" class="actionbar right openings">
             <div id="history" class="history-box">
             </div>
             <div id="hchildren" class="opening-children-box">
@@ -103,8 +103,8 @@
 
     <div id="statuslog" class="log"></div>
     <div id="pgnlog" class="log" onclick="selectAndCopyContent('pgnlog')"></div>
-    <div id="fenlog" class="log" onclick="selectAndCopyContent('fenlog')"></div>
     <div id="ucilog" class="log" onclick="selectAndCopyContent('ucilog')"></div>
+    <div id="fenlog" class="log" onclick="selectAndCopyContent('fenlog')"></div>
 
     <div class="centcont" id="games_library" style="margin-top: 64px; margin-bottom: 32px;"></div>
 

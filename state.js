@@ -206,15 +206,15 @@ function loadGamePromptPGN(){
     catch (ex){}
 }
 
-function loadBoard(){
-    const boardStr = prompt("Enter Board: ")
-    if(!boardStr) return
-    const curPlayer = confirm("White?") ? 'white' : 'black'
-    const board = JSON.parse(boardStr)
+function loadFen(){
+    const fenStr = prompt("Enter Board: ")
+    if(!fenStr) return
 
     try {
         boardFlipped = false
-        initState(board, curPlayer)
+        initState()
+        defective = true
+        chessGame = new Chess(fenStr)
         refreshUI()
     }
     catch (ex){}
@@ -299,22 +299,14 @@ function exportGame(){
 }
 
 function getCurrentStatePGNLog(statePosition, forceExt = false){
-    /*let pgnLog = ""
-    for(let i=1; statePosition >= i; i++){
-        const move = game.moveStack[i]
-        let pgn = !forceExt ? move.pgn : move.altPgn
-        if(move.lmrate === 'blunder') pgn += "?"
-        else if(move.lmrate === 'perfect') pgn += "!"
+    if(defective){
+        let rawPgn = game.moveStack[statePosition].pgn
+        if(rawPgn.length < 1) return ""
+        rawPgn = rawPgn.substring(rawPgn.lastIndexOf("]") + 1).trim()
 
-        if(i !== 1) pgnLog += " "
-        if(( (i-1) % 2) === 0){
-            const num = Math.floor((i / 2) + 1)
-            pgnLog += (num + ". ")
-        }
-        pgnLog += pgn
+        if(!rawPgn.split(" ")[0].includes(".")) return "..." + rawPgn
+        return rawPgn
     }
-
-    return pgnLog*/
 
     const rawPgn = game.moveStack[statePosition].pgn
     if(rawPgn.length < 1) return ""
@@ -338,6 +330,7 @@ function getCurrentStatePGNLog(statePosition, forceExt = false){
 }
 
 function getCurrentStateEnginePositionLog(statePosition){
+    if(defective) return ""
     let engineLog = ""
     for(let i=1; statePosition >= i; i++){
         const move = game.moveStack[i].move

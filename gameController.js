@@ -2,8 +2,10 @@ let readOnly = false
 let isTraining = false
 const USE_ENGINE = true
 let isLoading = false
+let defective = false
 
 function resetBoard() {
+    defective = false
     initState()
     refreshUI()
 
