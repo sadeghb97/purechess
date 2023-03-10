@@ -372,8 +372,7 @@ function engineEval(state, stateIndex){
         return
     }
     const engine = new Worker('lib/lozza.js');
-    perfMoveButton.classList.remove("perfect")
-    perfMoveButton.classList.add('perfect-disabled');
+    disableEngineButtons()
 
     engine.onmessage = (e) => {
         const data = e.data
@@ -426,8 +425,6 @@ function updateBoardWithEngineResults(stateId){
     const state = currentState()
     if(state.id !== stateId || state.eval === null) return
 
-    const perfMoveButton = document.getElementById("do_best_move")
-
     if(state.eval.forceMate){
         const isWhiteTurn = chessGame.turn() === 'w'
 
@@ -463,12 +460,10 @@ function updateBoardWithEngineResults(stateId){
     }
 
     if(state.eval.bm_from != null){
-        perfMoveButton.classList.remove("perfect-disabled")
-        perfMoveButton.classList.add('perfect');
+        enableEngineButtons()
     }
     else {
-        perfMoveButton.classList.remove("perfect")
-        perfMoveButton.classList.add('perfect-disabled');
+        disableEngineButtons()
     }
 }
 
@@ -483,4 +478,30 @@ function selectAndCopyContent(containerId){
     const container = document.getElementById(containerId)
     window.getSelection().selectAllChildren(container);
     document.execCommand("copy")
+}
+
+function disableEngineButtons(){
+    const perfMoveButton = document.getElementById("do_best_move")
+    const hintButton = document.getElementById("hint_btn")
+
+    perfMoveButton.disabled = true
+    hintButton.disabled = true
+
+    perfMoveButton.classList.remove("perfect")
+    perfMoveButton.classList.add('perfect-disabled');
+    hintButton.classList.remove("perfect")
+    hintButton.classList.add('perfect-disabled');
+}
+
+function enableEngineButtons(){
+    const perfMoveButton = document.getElementById("do_best_move")
+    const hintButton = document.getElementById("hint_btn")
+
+    perfMoveButton.disabled = false
+    hintButton.disabled = false
+
+    perfMoveButton.classList.remove("perfect-disabled")
+    perfMoveButton.classList.add('perfect');
+    hintButton.classList.remove("perfect-disabled")
+    hintButton.classList.add('perfect');
 }

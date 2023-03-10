@@ -133,10 +133,7 @@ function refreshBoard(){
 }
 
 function highlightLastMove(){
-    $boardElement.find('.' + squareClass).removeClass('highlight-normal')
-    $boardElement.find('.' + squareClass).removeClass('highlight-perfect')
-    $boardElement.find('.' + squareClass).removeClass('highlight-blunder')
-
+    clearHighlights()
     const lm = currentState().move
     if(lm == null) return
 
@@ -145,8 +142,32 @@ function highlightLastMove(){
     if(lmRate === 'perfect') hlClass = "highlight-perfect"
     else if(lmRate === 'blunder') hlClass = "highlight-blunder"
 
-    $boardElement.find('.square-' + lm.from).addClass(hlClass)
-    $boardElement.find('.square-' + lm.to).addClass(hlClass)
+    highlightSquare(lm.from, hlClass)
+    highlightSquare(lm.to, hlClass)
+}
+
+function clearHighlights(){
+    $boardElement.find('.' + squareClass).removeClass('highlight-normal')
+    $boardElement.find('.' + squareClass).removeClass('highlight-perfect')
+    $boardElement.find('.' + squareClass).removeClass('highlight-blunder')
+    $boardElement.find('.' + squareClass).removeClass('highlight-hint')
+}
+
+function highlightSquare(pos, hlClass){
+    $boardElement.find('.square-' + pos).addClass(hlClass)
+}
+
+function highlightHint(){
+    if(currentState().eval !== null && currentState().eval.bm_from !== null) {
+        clearHighlights()
+        const hlClass = "highlight-hint"
+
+        const sp = currentState().eval.bm_from
+        const ep = currentState().eval.bm_target
+
+        highlightSquare(sp, hlClass)
+        highlightSquare(ep, hlClass)
+    }
 }
 
 function setOrientation(or){
