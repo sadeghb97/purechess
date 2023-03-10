@@ -7,15 +7,12 @@
 
     <link rel="icon" href="assets/black_knight.png" type="image/png" sizes="16x16">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="lib/bootstrap.min.css">
     <link rel="stylesheet" href="lib/modal.css">
     <link rel="stylesheet" href="lib/chessboard-1.0.0.css">
 
-    <script
-            src="https://code.jquery.com/jquery-3.5.1.js"
-            integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
-            crossorigin="anonymous">
-    </script>
-
+    <script src="lib/jquery-3.5.1.js"></script>
+    <script src="lib/bootstrap.bundle.min.js"></script>
     <script src="lib/chess.js"></script>
     <script src="lib/chessboard-1.0.0.js"></script>
 
@@ -24,7 +21,7 @@
 <body>
     <div class="centcont" id="game_title"></div>
 
-    <div id="main">
+    <div id="main" class="centcont">
         <div class="actionbar left">
             <div>
                 <button class="button" onclick="staffordGambit()">Stafford</button>
@@ -103,10 +100,17 @@
         </div>
     </div>
 
-    <div id="statuslog" class="log"></div>
-    <div id="pgnlog" class="log" onclick="selectAndCopyContent('pgnlog')"></div>
-    <div id="ucilog" class="log" onclick="selectAndCopyContent('ucilog')"></div>
-    <div id="fenlog" class="log" onclick="selectAndCopyContent('fenlog')"></div>
+    <div class="container">
+        <div id="statuslog" class="card log"></div>
+        <div class="centcont align-content-between" style="width: 1090px; margin-top: 6px;">
+            <div id="pgnlog" class="card log" onclick="selectAndCopyContent('pgnlog')"></div>
+            <div id="ucilog" class="card log" onclick="selectAndCopyContent('ucilog')"></div>
+        </div>
+        <div class="centcont align-content-between" style="width: 1090px; margin-top: 6px;">
+            <div id="fenlog" class="card log" onclick="selectAndCopyContent('fenlog')"></div>
+            <div id="simpfenlog" class="card log" onclick="selectAndCopyContent('simpfenlog')"></div>
+        </div>
+    </div>
 
     <div class="centcont" id="games_library" style="margin-top: 64px; margin-bottom: 32px;"></div>
 

@@ -7,6 +7,7 @@ const $boardElement = $('#myBoard')
 let lastMove = null
 const $status = $('#statuslog')
 const $fen = $('#fenlog')
+const $simpfen = $('#simpfenlog')
 const $pgn = $('#pgnlog')
 const $uci = $('#ucilog')
 let boardFlipped = false
@@ -111,10 +112,18 @@ function updateStatus () {
     const curUci = getCurrentStateEnginePositionLog(game.statePosition)
 
     $status.html(status)
-    $fen.html(simplifyFen(chessGame))
-    $pgn.html(curPgn)
+    $fen.html(chessGame.fen())
+    $simpfen.html(simplifyFen(chessGame))
 
-    if(!defective){
+    if(!!curPgn){
+        $pgn.html(curPgn)
+        $pgn.css("display", "block");
+    }
+    else {
+        $pgn.css("display", "none");
+    }
+
+    if(!defective && !!curUci){
         $uci.html(curUci)
         $uci.css("display", "block");
     }
