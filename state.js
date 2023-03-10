@@ -345,6 +345,7 @@ function getCurrentStateEnginePositionLog(statePosition){
 }
 
 function getPartUciMoves(startIndex, endIndex){
+    if(endIndex <= 0) return []
     const fullUci = getCurrentStateEnginePositionLog(endIndex)
     if(fullUci.length <= 0) return []
 

@@ -69,10 +69,9 @@ function getPartPgn(pgnStr, start){
     for(let i=start; moves.length > i; i++){
         if(out.length > 0) out += " "
         const num = Math.floor(i / 2) + 1
-        out += num
 
-        if((i % 2) === 0) out += ". "
-        else out += "... "
+        if((i % 2) === 0) out += (num + ". ")
+        else if(i === start) out += (num + "... ")
         out += moves[i]
     }
     return out
